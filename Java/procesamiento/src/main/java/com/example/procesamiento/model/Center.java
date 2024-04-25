@@ -18,6 +18,8 @@ public class Center {
 
 	public Center() {
 	}
+	
+	
 
 	public Center(int id, String nombreCentro, int stand, String paginaWeb) {
 		this.id = id;
