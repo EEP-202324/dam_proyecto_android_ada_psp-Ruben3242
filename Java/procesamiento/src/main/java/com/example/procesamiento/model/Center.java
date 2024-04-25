@@ -1,9 +1,14 @@
 package com.example.procesamiento.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,11 +20,11 @@ public class Center {
 	private String nombreCentro;
 	private int stand;
 	private String paginaWeb;
+	@OneToMany(mappedBy = "center", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<User> users = new HashSet<>();
 
 	public Center() {
 	}
-	
-	
 
 	public Center(int id, String nombreCentro, int stand, String paginaWeb) {
 		this.id = id;
