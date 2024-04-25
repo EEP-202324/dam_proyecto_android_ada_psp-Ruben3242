@@ -19,7 +19,9 @@ public class User {
 	private String email;
 	private String password;
 	private String rol;
-
+	
+	
+	
 	public User() {
 	}
 
@@ -28,6 +30,9 @@ public class User {
 		this.nombre = nombre;
 		this.centroVisita = centroVisita;
 		this.email = email;
+		this.password = password;
+		this.rol = rol;
+		this.edad = edad;
 	}
 
 	public int getId() {

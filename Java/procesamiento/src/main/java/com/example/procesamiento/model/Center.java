@@ -14,14 +14,24 @@ public class Center {
 	private int id;
 	private String nombreCentro;
 	private int stand;
+	private String paginaWeb;
 
 	public Center() {
 	}
 
-	public Center(int id, String nombreCentro, int stand) {
+	public Center(int id, String nombreCentro, int stand, String paginaWeb) {
 		this.id = id;
 		this.nombreCentro = nombreCentro;
 		this.stand = stand;
+		this.paginaWeb = paginaWeb;
+	}
+
+	public String getPaginaWeb() {
+		return paginaWeb;
+	}
+
+	public void setPaginaWeb(String paginaWeb) {
+		this.paginaWeb = paginaWeb;
 	}
 
 	public int getId() {
@@ -47,7 +57,4 @@ public class Center {
 	public void setStand(int stand) {
 		this.stand = stand;
 	}
-
-	
-
 }
