@@ -8,6 +8,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.example.procesamiento.model.Center;
 
 public interface CenterRepository extends JpaRepository<Center, Integer>, PagingAndSortingRepository<Center, Integer> {
-	 List<Center> findByNombreCentroContainingIgnoreCase(String nombreCentro);
-	    List<Center> findByNombreCentroStartingWithIgnoreCase(String tipo);
+	
+	List<Center> findByNombreCentroContainingIgnoreCase(String nombreCentro);
+
+	List<Center> findByNombreCentroStartingWithIgnoreCase(String tipo);
 }

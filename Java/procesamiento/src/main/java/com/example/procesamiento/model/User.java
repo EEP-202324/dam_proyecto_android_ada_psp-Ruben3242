@@ -19,8 +19,8 @@ public class User {
 	private String nombre;
 	private String centroVisita;
 	private int edad;
-	private String email;
-	private String password;
+    private String email;
+    private String password;
 	private String rol;
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id")

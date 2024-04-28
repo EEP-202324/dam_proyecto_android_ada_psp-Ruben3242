@@ -3,6 +3,7 @@ package com.example.procesamiento.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,6 +57,16 @@ public class UserController {
 		User user = userService.getUserByEmail(email, password);
 		return ResponseEntity.ok(user);
 	}
+	
+	@PostMapping("/owner/login")
+    public ResponseEntity<?> loginOwner(@RequestBody String email, @RequestBody String password ) {
+        boolean isAuthenticated = userService.authenticateUser(email, password);
+        if (isAuthenticated) {
+            return ResponseEntity.ok().body("Acceso concedido a Owner");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acceso denegado");
+        }
+    }
 	
 	
 
