@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.procesamiento.model.LoginRequest;
 import com.example.procesamiento.model.User;
 import com.example.procesamiento.service.UserService;
 
@@ -45,6 +46,11 @@ public class UserController {
 		userService.deleteUser(id);
 		return ResponseEntity.ok().build();
 	}
+//	@PostMapping("/user")
+//	public ResponseEntity<User> updateUser(@RequestBody User user) {
+//		User updatedUser = userService.updateUser(user);
+//		return ResponseEntity.ok(updatedUser);
+//	} 
 
 	@GetMapping("/user")
 	public ResponseEntity<List<User>> getUsers() {
@@ -59,14 +65,15 @@ public class UserController {
 	}
 	
 	@PostMapping("/owner/login")
-    public ResponseEntity<?> loginOwner(@RequestBody String email, @RequestBody String password ) {
-        boolean isAuthenticated = userService.authenticateUser(email, password);
-        if (isAuthenticated) {
-            return ResponseEntity.ok().body("Acceso concedido a Owner");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acceso denegado");
-        }
-    }
+	public ResponseEntity<?> loginOwner(@RequestBody LoginRequest loginRequest) {
+	    boolean isAuthenticated = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+	    if (isAuthenticated) {
+	        return ResponseEntity.ok().body("Acceso concedido a Owner");
+	    } else {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acceso denegado");
+	    }
+	}
+
 	
 	
 
