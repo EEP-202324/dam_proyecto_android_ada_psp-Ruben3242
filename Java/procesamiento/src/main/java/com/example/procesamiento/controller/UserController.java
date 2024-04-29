@@ -41,26 +41,16 @@ public class UserController {
 		return ResponseEntity.ok(users);
 	}
 
-	@GetMapping
-	public ResponseEntity<User> getUserByEmail(@PathVariable String email, @PathVariable String password) {
-		User user = userService.getUserByEmail(email, password);
-		return ResponseEntity.ok(user);
-	}
+//	@GetMapping
+//	public ResponseEntity<User> getUserByEmail(@PathVariable String email, @PathVariable String password) {
+//		User user = userService.getUserByEmail(email, password);
+//		return ResponseEntity.ok(user);
+//	}
 
 	@PostMapping("/user")
 	public ResponseEntity<User> saveUser(@RequestBody User user) {
 		User savedUser = userService.saveUser(user);
 		return ResponseEntity.ok(savedUser);
-	}
-
-	@PostMapping("/owner/login")
-	public ResponseEntity<?> loginOwner(@RequestBody LoginRequest loginRequest) {
-		boolean isAuthenticated = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-		if (isAuthenticated) {
-			return ResponseEntity.ok().body("Acceso concedido a Owner");
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acceso denegado");
-		}
 	}
 
 	@DeleteMapping("/user/{id}")
@@ -80,5 +70,22 @@ public class UserController {
 		User updatedUser = userService.updateUser(user);
 		return ResponseEntity.ok(updatedUser);
 	}
+
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+	    User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
+	    if (user != null) {
+	        // Usuario autenticado correctamente
+	        return ResponseEntity.ok(user);
+	    } else if ("user".equals(request.getRole())) {
+	        // Crear nuevo usuario
+	        User newUser = userService.createUser(request.getEmail(), request.getPassword());
+	        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+	    } else {
+	        // Usuario existente o credenciales incorrectas
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+	    }
+	}
+
 
 }

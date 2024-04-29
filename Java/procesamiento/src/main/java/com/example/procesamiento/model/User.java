@@ -30,6 +30,11 @@ public class User {
 	public User() {
 	}
 
+	public User(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
+
 	public User(int id, String nombre, String centroVisita, int edad, String email, String password, String rol) {
 		this.id = id;
 		this.nombre = nombre;
