@@ -29,25 +29,23 @@ public class UserService {
 	}
 
 	public User loginUser(String email, String rawPassword, String role) {
-	    Optional<User> optUser = userRepository.findByEmail(email);
-	    if (optUser.isPresent()) {
-	        User user = optUser.get();
-	        // Verifica el rol y la contraseña aquí
-	        if (role.equals(user.getRol()) && passwordEncoder.matches(rawPassword, user.getPassword())) {
-	            return user; // Usuario autenticado
-	        }
-	    } else if ("user".equals(role)) {
-	        // Crea un nuevo usuario si el rol es 'user' y el email no existe
-	        User newUser = new User();
-	        newUser.setEmail(email);
-	        newUser.setPassword(passwordEncoder.encode(rawPassword));
-	        newUser.setRol(role);
-	        return userRepository.save(newUser);
-	    }
-	    return null; // Usuario no encontrado o contraseña/rol incorrectos
+		Optional<User> optUser = userRepository.findByEmail(email);
+		if (optUser.isPresent()) {
+			User user = optUser.get();
+			// Verifica el rol y la contraseña aquí
+			if (role.equals(user.getRol()) && passwordEncoder.matches(rawPassword, user.getPassword())) {
+				return user; // Usuario autenticado
+			}
+		} else if ("user".equals(role)) {
+			// Crea un nuevo usuario si el rol es 'user' y el email no existe
+			User newUser = new User();
+			newUser.setEmail(email);
+			newUser.setPassword(passwordEncoder.encode(rawPassword));
+			newUser.setRol(role);
+			return userRepository.save(newUser);
+		}
+		return null; // Usuario no encontrado o contraseña/rol incorrectos
 	}
-
-
 
 	public User saveUser(User user) {
 		String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -72,21 +70,10 @@ public class UserService {
 		}
 	}
 
-//	public boolean authenticateUser(String email, String rawPassword) {
-//        User user = userRepository.findByEmail(email);
-//        if (user != null && "owner".equals(user.getRol())) {
-//            return passwordEncoder.matches(rawPassword, user.getPassword());
-//        }
-//        return false;
-//    }
-
 	public void deleteUser(Integer id) {
 		userRepository.deleteById(id);
 	}
 
-//	public User updateUser(User user) {
-//		return userRepository.save(user);
-//	}
 	public User updateUser(Integer id, User user) {
 		User existingUser = userRepository.findById(id).orElse(null);
 		if (existingUser != null) {
