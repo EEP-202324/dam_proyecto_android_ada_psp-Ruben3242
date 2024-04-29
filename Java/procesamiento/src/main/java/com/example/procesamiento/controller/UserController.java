@@ -1,8 +1,8 @@
 package com.example.procesamiento.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,16 +36,10 @@ public class UserController {
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<List<User>> getUsers() {
-		List<User> users = userService.getUsers();
-		return ResponseEntity.ok(users);
-	}
-
-//	@GetMapping
-//	public ResponseEntity<User> getUserByEmail(@PathVariable String email, @PathVariable String password) {
-//		User user = userService.getUserByEmail(email, password);
-//		return ResponseEntity.ok(user);
-//	}
+    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
+        Page<User> users = userService.getUsers(pageable);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 
 	@PostMapping("/user")
 	public ResponseEntity<User> saveUser(@RequestBody User user) {
@@ -59,12 +53,6 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 
-//	@PostMapping("/user")
-//	public ResponseEntity<User> updateUser(@RequestBody User user) {
-//		User updatedUser = userService.updateUser(user);
-//		return ResponseEntity.ok(updatedUser);
-//	} 
-	// updateUser
 	@PutMapping("/user/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
 		User updatedUser = userService.updateUser(id, user);
@@ -73,19 +61,18 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-	    User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
-	    if (user != null) {
-	        // Usuario autenticado correctamente
-	        return ResponseEntity.ok(user);
-	    } else if ("user".equals(request.getRole())) {
-	        // Crear nuevo usuario
-	        User newUser = userService.createUser(request.getEmail(), request.getPassword());
-	        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-	    } else {
-	        // Usuario existente o credenciales incorrectas
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-	    }
+		User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
+		if (user != null) {
+			// Usuario autenticado correctamente
+			return ResponseEntity.ok(user);
+		} else if ("user".equals(request.getRole())) {
+			// Crear nuevo usuario
+			User newUser = userService.createUser(request.getEmail(), request.getPassword());
+			return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+		} else {
+			// Usuario existente o credenciales incorrectas
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+		}
 	}
-
 
 }
