@@ -87,12 +87,19 @@ public class UserService {
 //	public User updateUser(User user) {
 //		return userRepository.save(user);
 //	}
-	public User updateUser(User user) {
-		return userRepository.findById(user.getId()).map(existingUser -> {
+	public User updateUser(Integer id, User user) {
+		User existingUser = userRepository.findById(id).orElse(null);
+		if (existingUser != null) {
 			existingUser.setNombre(user.getNombre());
+			existingUser.setCentroVisita(user.getCentroVisita());
+			existingUser.setEdad(user.getEdad());
 			existingUser.setEmail(user.getEmail());
+			existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+			existingUser.setRol(user.getRol());
 			return userRepository.save(existingUser);
-		}).orElse(null);
+		} else {
+			return null;
+		}
 	}
 
 	public List<User> getUsers() {

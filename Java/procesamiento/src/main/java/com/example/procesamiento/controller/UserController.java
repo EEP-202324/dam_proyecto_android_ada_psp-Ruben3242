@@ -65,9 +65,9 @@ public class UserController {
 //		return ResponseEntity.ok(updatedUser);
 //	} 
 	// updateUser
-	@PutMapping("/user")
-	public ResponseEntity<User> updateUser(@RequestBody User user) {
-		User updatedUser = userService.updateUser(user);
+	@PutMapping("/user/{id}")
+	public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
+		User updatedUser = userService.updateUser(id, user);
 		return ResponseEntity.ok(updatedUser);
 	}
 
