@@ -10,6 +10,7 @@ object ApiClient {
 
     private val client = OkHttpClient.Builder().build()
 
+
     val instance: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -18,5 +19,6 @@ object ApiClient {
             .build()
             .create(ApiService::class.java)
     }
+
 
 }

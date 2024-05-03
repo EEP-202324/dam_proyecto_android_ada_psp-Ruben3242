@@ -15,7 +15,6 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests().requestMatchers("/**").permitAll() // Permit all requests without
-																						// authentication
 				.anyRequest().authenticated() // Any other request requires authentication
 				.and().httpBasic().disable() // Disable basic authentication
 				.formLogin().disable(); // Disable form login
@@ -23,6 +22,13 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+//	@Bean
+//	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//		http.authorizeHttpRequests(request -> request.requestMatchers("/cashcards/**").hasRole("CARD-OWNER"))// new
+//																												// role)
+//				.httpBasic(Customizer.withDefaults()).csrf(csrf -> csrf.disable());
+//		return http.build();
+//	}
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(); // Password encoder bean

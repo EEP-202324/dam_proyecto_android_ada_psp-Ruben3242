@@ -19,7 +19,7 @@ import com.example.procesamiento.model.User;
 import com.example.procesamiento.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1")
+//@RequestMapping("/api/v1")
 public class UserController {
 
 	private final UserService userService;
@@ -35,22 +35,22 @@ public class UserController {
 		return ResponseEntity.ok(user);
 	}
 
-	@GetMapping("/user")
+	@GetMapping("/users")
     public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
         Page<User> users = userService.getUsers(pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
 	@PostMapping("/user")
-	public ResponseEntity<User> saveUser(@RequestBody User user) {
+	public ResponseEntity<User> createUser(@RequestBody User user) {
 		User savedUser = userService.saveUser(user);
 		return ResponseEntity.ok(savedUser);
 	}
 
 	@DeleteMapping("/user/{id}")
-	public ResponseEntity<User> deleteUser(@PathVariable Integer id) {
+	public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
 		userService.deleteUser(id);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/user/{id}")

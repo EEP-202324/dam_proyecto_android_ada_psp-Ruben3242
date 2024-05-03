@@ -10,7 +10,7 @@ import com.example.procesamiento.service.CenterService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+//@RequestMapping("/api/v1")
 public class CenterController {
     private final CenterService centerService;
 
@@ -37,5 +37,17 @@ public class CenterController {
         Center newCenter = centerService.saveCenter(center);
         return new ResponseEntity<>(newCenter, HttpStatus.CREATED);
     }
+    
+    @DeleteMapping("/centers/{id}")
+	public ResponseEntity<?> deleteCenter(@PathVariable Integer id) {
+		centerService.deleteCenter(id);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+    
+	@PutMapping("/centers/{id}")
+	public ResponseEntity<Center> updateCenter(@PathVariable Integer id, @RequestBody Center center) {
+		Center updatedCenter = centerService.updateCenter(id, center);
+		return new ResponseEntity<>(updatedCenter, HttpStatus.OK);
+	}
 
 }

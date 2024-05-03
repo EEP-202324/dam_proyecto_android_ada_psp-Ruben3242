@@ -5,7 +5,8 @@ data class User(
     val nombre: String,
     val email: String,
     val password: String,
-    val rol: String
+    val rol: String,
+    val centroVisita: String
 ) {
     override fun toString(): String {
         return "User(id=$id, nombre='$nombre', email='$email', password='$password', rol='$rol')"

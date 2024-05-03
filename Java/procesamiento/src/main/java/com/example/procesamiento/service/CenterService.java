@@ -36,5 +36,21 @@ public class CenterService {
     public Center saveCenter(Center center) {
         return centerRepository.save(center);
     }
+    public void deleteCenter(Integer name) {
+        centerRepository.deleteById(name);
+    }
+
+	public Center updateCenter(Integer id, Center center) {
+		Center centerToUpdate = centerRepository.findById(id).orElse(null);
+        if (centerToUpdate != null) {
+            centerToUpdate.setNombreCentro(center.getNombreCentro());
+            centerToUpdate.setPaginaWeb(center.getPaginaWeb());
+            centerToUpdate.setStand(center.getStand());
+            return centerRepository.save(centerToUpdate);
+        }
+        return null;
+    }
+	
+	
 }
 

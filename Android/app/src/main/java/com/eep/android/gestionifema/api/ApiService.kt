@@ -1,16 +1,40 @@
 package com.eep.android.gestionifema.api
 
+import com.eep.android.gestionifema.model.LoginRequest
 import com.eep.android.gestionifema.model.User
 import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface ApiService {
-    @POST("login")
-    fun loginUser(@Body user: User): Call<User>
+    companion object Factory{
+        private const val BASE_URL = "http://localhost:8080"
+        fun create(): ApiService {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            return retrofit.create(ApiService::class.java)
+        }
+    }
 
-    @POST("register")
-    fun registerUser(@Body user: User): Call<User>
+
+    @GET("user")
+    fun listaUsuarios(): Call<List<User>>
+
+    @POST(value ="login")
+    fun loginUser(@Body loginRequest: LoginRequest):
+            Call<LoginRequest>
+
+
+    @DELETE("user/{id}")
+    fun registerUser(): Call<User>
 
     @POST("logout")
     fun logoutUser(@Body user: User): Call<User>
@@ -21,12 +45,10 @@ interface ApiService {
     @POST("users")
     fun getUsers(@Body user: User): Call<User>
 
-    @POST("update")
+    @PUT("")
     fun updateUser(@Body user: User): Call<User>
 
     @POST("delete")
     fun deleteUser(@Body user: User): Call<User>
 
-    @POST("deleteAll")
-    fun deleteAllUsers(@Body user: User): Call<User>
 }

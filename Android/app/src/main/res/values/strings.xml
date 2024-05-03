@@ -6,4 +6,10 @@
     <string name="role_button_owner">Owner</string>
     <string name="role_button_user">User</string>
     <string name="login_button">Login</string>
+    <string name="pantalla_login">Pantalla Login</string>
+    <string name="vista_user">Pantalla Registro User</string>
+    <string name="pantalla_listado_centros">Listado de Centros</string>
+    <string name="pantalla_listado_usuarios">Listado de Usuarios</string>
+
+    <string name="vista_owner">Vista Owner</string>
 </resources>
