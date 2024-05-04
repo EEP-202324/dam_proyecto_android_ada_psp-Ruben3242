@@ -1,12 +1,11 @@
 package com.eep.android.gestionifema.model
 
+import androidx.compose.ui.semantics.Role
+
 
 data class LoginRequest(
-    val email: String,
+    val username: String,
     val password: String,
     val role: String
-) {
-    fun isValid(): Boolean {
-        return email.isNotEmpty() && password.isNotEmpty()
-    }
-}
+)
+

@@ -99,9 +99,10 @@ private fun performLogin(email: String, password: String, role: String) {
     ApiClient.instance.loginUser(loginRequest).enqueue(object : Callback<User>{
         override fun onResponse(call: Call<User>, response: Response<User>) {
             if (response.isSuccessful) {
-                // Handle successful login
+                val user = response.body()
+                // Handle login success
             } else {
-                // Handle login failure
+
             }
         }
 

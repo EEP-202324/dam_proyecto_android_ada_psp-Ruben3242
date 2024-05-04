@@ -26,29 +26,22 @@ interface ApiService {
 
 
     @GET("user")
-    fun listaUsuarios(): Call<List<User>>
+    fun getUsers(): Call<List<User>>
 
-    @POST(value ="login")
-    fun loginUser(@Body loginRequest: LoginRequest):
-            Call<LoginRequest>
+    @GET("user/{id}")
+    fun getUserById(@Query("id") id: Int): Call<User>
 
+    @PUT("user/{id}")
+    fun updateUserById(@Query("id") id: Int, @Body user: User): Call<User>
 
     @DELETE("user/{id}")
-    fun registerUser(): Call<User>
-
-    @POST("logout")
-    fun logoutUser(@Body user: User): Call<User>
+    fun deleteUserById(@Query("id") id: Int): Call<User>
 
     @POST("user")
-    fun getUser(@Body user: User): Call<User>
+    fun createUser(@Body user: User): Call<User>
 
-    @POST("users")
-    fun getUsers(@Body user: User): Call<User>
+    @POST(value ="login")
+    fun loginUser(@Body loginRequest: LoginRequest): Call<User>
 
-    @PUT("")
-    fun updateUser(@Body user: User): Call<User>
-
-    @POST("delete")
-    fun deleteUser(@Body user: User): Call<User>
 
 }

@@ -21,7 +21,8 @@ class IfemaApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IfemaNavigation()
+            LoginScreen()
+//            IfemaNavigation()
         }
     }
 }

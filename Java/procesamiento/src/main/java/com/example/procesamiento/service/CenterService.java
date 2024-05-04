@@ -22,6 +22,7 @@ public class CenterService {
     }
     
     public List<Center> searchCentersByType(String type) {
+    	
         return centerRepository.findByNombreCentroStartingWithIgnoreCase(type);
     }
     

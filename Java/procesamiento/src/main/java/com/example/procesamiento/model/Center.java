@@ -20,17 +20,26 @@ public class Center {
 	private String nombreCentro;
 	private int stand;
 	private String paginaWeb;
+	private String type;
 	@OneToMany(mappedBy = "center", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<User> users = new HashSet<>();
 
 	public Center() {
 	}
 
-	public Center(int id, String nombreCentro, int stand, String paginaWeb) {
+	public Center(int id, String nombreCentro, int stand, String paginaWeb, String type) {
 		this.id = id;
 		this.nombreCentro = nombreCentro;
 		this.stand = stand;
 		this.paginaWeb = paginaWeb;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getPaginaWeb() {
