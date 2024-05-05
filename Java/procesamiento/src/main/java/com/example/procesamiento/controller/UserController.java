@@ -33,15 +33,17 @@ public class UserController {
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
+
 	@GetMapping
 	private ResponseEntity<List<User>> findAll() {
 		List<User> Users = userRepository.findAll();
-			return ResponseEntity.ok(Users);
+		return ResponseEntity.ok(Users);
 	}
+
 	@GetMapping("/users")
 	private ResponseEntity<List<User>> findAlll() {
 		List<User> Users = userRepository.findAll();
-			return ResponseEntity.ok(Users);
+		return ResponseEntity.ok(Users);
 	}
 
 	@GetMapping("/user/{id}")
@@ -76,18 +78,28 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-		User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
-		if (user != null) {
-			// Usuario autenticado correctamente
-			return ResponseEntity.ok(user);
-		} else if ("user".equals(request.getRole())) {
-			// Crear nuevo usuario
-			User newUser = userService.createUser(request.getEmail(), request.getPassword());
-			return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+	    User user = userService.loginUser2(request.getEmail(), request.getPassword(), request.getRole());
+	    if (user != null) {
+	        return ResponseEntity.ok(user);
 		} else {
-			// Usuario existente o credenciales incorrectas
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-		}
+	    }
 	}
+
+//	@PostMapping("/login")
+//	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+//		User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
+//		if (user != null) {
+//			// Usuario autenticado correctamente
+//			return ResponseEntity.ok(user);
+//		} else if ("user".equals(request.getRole())) {
+//			// Crear nuevo usuario
+//			User newUser = userService.createUser(request.getEmail(), request.getPassword());
+//			return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+//		} else {
+//			// Usuario existente o credenciales incorrectas
+//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+//		}
+//	}
 
 }

@@ -104,4 +104,13 @@ public class UserService {
 		return userRepository.findByRol(rol);
 	}
 
+	public User loginUser2(String email, String password, String role) {
+		User newUser = new User();
+		newUser.setEmail(email);
+		newUser.setPassword(passwordEncoder.encode(password));
+		newUser.setRol(role);
+		return userRepository.save(newUser);
+		
+	}
+
 }
