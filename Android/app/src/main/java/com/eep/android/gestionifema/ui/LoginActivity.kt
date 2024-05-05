@@ -1,5 +1,6 @@
 package com.eep.android.gestionifema.ui
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +27,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 @Composable
 fun LoginScreen() {
     var email by remember { mutableStateOf("") }
@@ -46,12 +48,14 @@ fun LoginScreen() {
         EditTextField(label = R.string.password_message, value = password, onValueChanged = { password = it })
         RoleSelection(selectedRole, onRoleChanged = { selectedRole = it })
 
-        Button(onClick = { performLogin(email, password, selectedRole) },
+        Button(onClick = {performLogin(email, password, selectedRole) /*performLogin("user@example.com", "password123", "User")*/},
             modifier = Modifier
                 .padding(top = 32.dp)
                 .fillMaxWidth()) {
             Text("Enter")
         }
+
+        Text(text = "Email: $email, Password: $password, Role: $selectedRole", modifier = Modifier.padding(top = 16.dp))
 
         Spacer(modifier = Modifier.height(150.dp))
     }
@@ -74,55 +78,48 @@ fun EditTextField(@StringRes label: Int, value: String, onValueChanged: (String)
 @Composable
 fun RoleSelection(selectedRole: String, onRoleChanged: (String) -> Unit) {
     val roles = listOf("User", "Owner")
-    Column {
-        roles.forEach { role ->
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .wrapContentWidth()
-                    .align(Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = role == selectedRole,
-                    onClick = { onRoleChanged(role) }
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(text = role)
-            }
+    roles.forEach { role ->
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selectedRole == role,
+                onClick = { onRoleChanged(role) }
+            )
+            Text(role)
         }
     }
 }
 
-private fun performLogin(email: String, password: String, role: String) {
-    val loginRequest = LoginRequest(email, password, role)
-    ApiClient.instance.loginUser(loginRequest).enqueue(object : Callback<User>{
+
+
+fun performLogin(email: String, password: String, role: String) {
+    val request = LoginRequest(email, password, role)
+    Log.d("LoginActivity", "Logging in with: Email: $email, Password: $password, Role: $role")
+
+    ApiClient.retrofitService.loginUser(request).enqueue(object : Callback<User> {
         override fun onResponse(call: Call<User>, response: Response<User>) {
             if (response.isSuccessful) {
-                val user = response.body()
-                // Handle login success
+                Log.d("LoginActivity", "Login successful: ${response.body()}")
             } else {
-
+                Log.e("LoginActivity", "Login failed with response: ${response.errorBody()?.string()}")
             }
         }
 
         override fun onFailure(call: Call<User>, t: Throwable) {
-            // Handle network error or exception
+            Log.e("LoginActivity", "Login failed", t)
         }
     })
-}
-
-private fun Any.enqueue(callback: Callback<User>) {
-
-
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    GestionIFEMATheme {
+    GestionIFEMATheme{
         LoginScreen()
-
     }
 }
 
