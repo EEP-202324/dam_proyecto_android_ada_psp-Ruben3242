@@ -1,5 +1,7 @@
 package com.example.procesamiento.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.procesamiento.model.LoginRequest;
 import com.example.procesamiento.model.User;
+import com.example.procesamiento.repository.UserRepository;
 import com.example.procesamiento.service.UserService;
 
 @RestController
@@ -23,10 +26,22 @@ import com.example.procesamiento.service.UserService;
 public class UserController {
 
 	private final UserService userService;
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	public UserController(UserService userService) {
 		this.userService = userService;
+	}
+	@GetMapping
+	private ResponseEntity<List<User>> findAll() {
+		List<User> Users = userRepository.findAll();
+			return ResponseEntity.ok(Users);
+	}
+	@GetMapping("/users")
+	private ResponseEntity<List<User>> findAlll() {
+		List<User> Users = userRepository.findAll();
+			return ResponseEntity.ok(Users);
 	}
 
 	@GetMapping("/user/{id}")
@@ -35,11 +50,11 @@ public class UserController {
 		return ResponseEntity.ok(user);
 	}
 
-	@GetMapping("/users")
-    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
-        Page<User> users = userService.getUsers(pageable);
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
+//	@GetMapping("/users")
+//    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
+//        Page<User> users = userService.getUsers(pageable);
+//        return new ResponseEntity<>(users, HttpStatus.OK);
+//    }
 
 	@PostMapping("/user")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
