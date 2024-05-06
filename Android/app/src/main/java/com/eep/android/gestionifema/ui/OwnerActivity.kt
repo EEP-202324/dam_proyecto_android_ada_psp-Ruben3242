@@ -6,6 +6,6 @@ import androidx.navigation.NavController
 
 @Composable
 fun OwnerScreen(navController: NavController) {
-    Text("Login Screen")
+    Text("Ownwer")
     // Aquí implementarías la lógica de login usando ApiClient
 }
