@@ -4,15 +4,16 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,21 +27,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-//val dummyCenters = listOf(
-//    Center(1, "Centro 1", "www.centro1.com", 1),
-//    Center(2, "Centro 2", "www.centro2.com", 2),
-//    Center(3, "Centro 3", "www.centro3.com", 3)
-//)
+
 var listaCentros = mutableListOf<Center>()
-var listaCentroMostrar = ""
+
 
 @Composable
 fun UserScreen(navController: NavHostController, userId: Int) {
     var nombre by remember { mutableStateOf("") }
     var edad by remember { mutableStateOf("") }
     var selectedCenter by remember { mutableStateOf<Center?>(null) }
-    var mostarlista by remember { mutableStateOf(false) }
-//    val centers by remember { mutableStateOf(dummyCenters) } // Supongamos que tienes una lista de centros
 
     LaunchedEffect(key1 = Unit) {
         obtenerCentros()
@@ -53,6 +48,9 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             label = { Text("Nombre") },
             modifier = Modifier.fillMaxWidth(),
         )
+//        CenterListItem(center = Center(1, "Centro de Prueba", 2, "Type", "Prueba")) {
+//
+//        }
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = edad,
@@ -62,21 +60,21 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        // Lista de centros
-        TextButton(onClick = {mostarlista = !mostarlista}) {
-            Text("Mostrar centros", style = MaterialTheme.typography.headlineSmall)
-        }
-        if (mostarlista){
-            Text(listaCentros.toString())
-        }
 
+        Text("Centros:", style = MaterialTheme.typography.headlineSmall)
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            listaCentros.forEach { center ->
-                CenterListItem(center = center) {
-                    selectedCenter = center
+            listaCentros.forEachIndexed { index, center ->
+                CenterListItem(center = center, navController = navController) {
+                    // Aquí implementas la lógica de expansión
+                    val newCenter = center.copy(
+                        isExpanded = !center.isExpanded,
+                        type = center.type ?: "Default Type"  // Asegura que 'type' no sea nulo
+                    )
+                    listaCentros[index] = newCenter  // Actualiza el elemento en la lista
                 }
             }
         }
+
 
         // Botón para obtener más información del centro seleccionado
         Button(
@@ -150,23 +148,43 @@ fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) 
         }
     })
 }
-
 @Composable
-fun CenterListItem(center: Center, onItemClick: () -> Unit) {
-    Row(
+fun CenterListItem(center: Center, navController: NavHostController, onExpandClick: (Center) -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onItemClick)
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(8.dp)
+            .clickable { navController.navigate("centerDetail/${center.id}") },
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = center.nombreCentro, style = MaterialTheme.typography.bodySmall)
-            Text(text = center.paginaWeb, style = MaterialTheme.typography.bodySmall)
-            Text(text = "Stand: ${center.stand}", style = MaterialTheme.typography.bodySmall)
-        }
-        IconButton(onClick = onItemClick) {
-            Icon(Icons.Filled.Info, contentDescription = "Más información")
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.School,
+                contentDescription = null,  // Considera agregar una descripción adecuada
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(center.nombreCentro, style = MaterialTheme.typography.titleMedium)
+                Text(center.paginaWeb, style = MaterialTheme.typography.bodySmall)
+                if (center.isExpanded) {
+                    // Asumiendo que tienes más información para mostrar cuando está expandido
+                    Text("Información adicional aquí")
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = {
+                    // Aquí es donde usas el código para expandir y actualizar el objeto
+                    onExpandClick(center)
+                }
+            ) {
+                Icon(Icons.Default.Info, contentDescription = "Más información")
+            }
         }
     }
 }
@@ -181,9 +199,6 @@ fun obtenerCentros() {
                 Log.d("UserScreen", "Centros obtenidos: $listaCentros")
             }
         }
-
-
-
         override fun onFailure(call: Call<List<Center>>, t: Throwable) {
             Log.e("UserScreen", "Error al obtener los centros", t)
         }
