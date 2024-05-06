@@ -1,19 +1,18 @@
 package com.example.procesamiento.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.procesamiento.model.LoginRequest;
@@ -28,6 +27,8 @@ public class UserController {
 	private final UserService userService;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	public UserController(UserService userService) {
@@ -76,15 +77,42 @@ public class UserController {
 		return ResponseEntity.ok(updatedUser);
 	}
 
+//	@PostMapping("/login")
+//	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+//	    User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
+//	    if (user != null) {
+//	        return ResponseEntity.ok(user);
+//		} else {
+//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+//	    }
+//	}
+
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-	    User user = userService.loginUser2(request.getEmail(), request.getPassword(), request.getRole());
-	    if (user != null) {
-	        return ResponseEntity.ok(user);
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-	    }
-	}
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        Optional<User> optUser = userRepository.findByEmail(request.getEmail());
+        User user;
+
+        // Verifica si el usuario con ese email ya existe
+        if (optUser.isPresent()) {
+            user = optUser.get();
+            // Verifica si el rol y la contraseña son correctos
+            if (user.getRol().equals(request.getRole()) && passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+            }
+        } else if ("User".equals(request.getRole())) {
+            // Crear un nuevo usuario si el rol es 'User' y el email no existe
+            User newUser = new User();
+            newUser.setEmail(request.getEmail());
+            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+            newUser.setRol("User");
+            userRepository.save(newUser);
+            return ResponseEntity.ok(newUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+        }
+    }
 
 //	@PostMapping("/login")
 //	public ResponseEntity<?> login(@RequestBody LoginRequest request) {

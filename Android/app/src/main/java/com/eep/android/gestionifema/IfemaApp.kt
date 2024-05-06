@@ -14,27 +14,19 @@ import androidx.navigation.compose.rememberNavController
 
 import com.eep.android.gestionifema.ui.LoginScreen
 import com.eep.android.gestionifema.ui.OwnerScreen
+import com.eep.android.gestionifema.ui.Screen
 import com.eep.android.gestionifema.ui.UserScreen
+import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 
-
-class IfemaApp : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            LoginScreen()
-//            IfemaNavigation()
-        }
-    }
-}
 
 @Composable
-fun IfemaNavigation() {
+fun IfemaApp() {
     val navController = rememberNavController()
     Scaffold { innerPadding ->
-        NavHost(navController, startDestination = "login", Modifier.padding(innerPadding)) {
-            composable("login") { LoginScreen() }
-            composable("user") { UserScreen(navController) }
-            composable("owner") { OwnerScreen(navController) }
+        NavHost(navController = navController, startDestination = Screen.Login, modifier = Modifier.padding(innerPadding)) {
+            composable(Screen.Login) { LoginScreen(navController) }
+            composable(Screen.User) { UserScreen(navController) }
+            composable(Screen.Owner) { OwnerScreen(navController) }
         }
     }
 }
@@ -42,5 +34,8 @@ fun IfemaNavigation() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    IfemaNavigation()
+    GestionIFEMATheme {
+        IfemaApp()
+    }
 }
+

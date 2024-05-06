@@ -31,22 +31,31 @@ public class UserService {
 	}
 
 	public User loginUser(String email, String rawPassword, String role) {
-		Optional<User> optUser = userRepository.findByEmail(email);
-		if (optUser.isPresent()) {
-			User user = optUser.get();
-			// Verifica el rol y la contraseña aquí
-			if (role.equals(user.getRol()) && passwordEncoder.matches(rawPassword, user.getPassword())) {
-				return user; // Usuario autenticado
+		User user = new User();
+		user.setRol(role);
+		Optional<User> userEmail = userRepository.findByEmail(email);
+		if (user.getRol().equals("Owner") || user.getRol().equals("User")) {
+			if (userEmail.isPresent() && user.getRol().equals("Owner")) {
+				if (user.getPassword().equals(passwordEncoder.encode(rawPassword))) {
+					return user;
+				} else {
+					return null;
+				}
+			} else if (!userEmail.isPresent() && user.getRol().equals("User")) {
+				User newUser = new User();
+				newUser.setEmail(email);
+				newUser.setPassword(passwordEncoder.encode(rawPassword));
+				newUser.setRol("User");
+				return userRepository.save(newUser);
+			} else if (userEmail.isPresent() && user.getRol().equals("User")) {
+				if (user.getPassword().equals(passwordEncoder.encode(rawPassword))) {
+					return user;
+				} else {
+					return null;
+				}
 			}
-		} else if ("user".equals(role)) {
-			// Crea un nuevo usuario si el rol es 'user' y el email no existe
-			User newUser = new User();
-			newUser.setEmail(email);
-			newUser.setPassword(passwordEncoder.encode(rawPassword));
-			newUser.setRol(role);
-			return userRepository.save(newUser);
 		}
-		return null; // Usuario no encontrado o contraseña/rol incorrectos
+		return null; 
 	}
 
 	public User saveUser(User user) {
@@ -92,8 +101,8 @@ public class UserService {
 	}
 
 	public Page<User> getUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
+		return userRepository.findAll(pageable);
+	}
 
 //	public User getUserByEmail(String email, String password) {
 //		return userRepository.findByEmailAndPassword(email, password);
@@ -110,7 +119,7 @@ public class UserService {
 		newUser.setPassword(passwordEncoder.encode(password));
 		newUser.setRol(role);
 		return userRepository.save(newUser);
-		
+
 	}
 
 }

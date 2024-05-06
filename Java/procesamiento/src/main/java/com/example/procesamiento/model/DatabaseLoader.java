@@ -18,11 +18,11 @@ public class DatabaseLoader implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Verifica si hay datos en la base de datos
-		if (userRepository.findByRol("owner").size() == 0) {
+		if (userRepository.findByRol("Owner").size() == 0) {
 			User defaultOwner = new User();
 			defaultOwner.setEmail("owner123@gmail.com");
 			defaultOwner.setPassword(passwordEncoder.encode("1234"));
-			defaultOwner.setRol("owner");
+			defaultOwner.setRol("Owner");
 			userRepository.save(defaultOwner);
 		} 
 			

@@ -3,10 +3,9 @@ package com.eep.android.gestionifema
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.eep.android.gestionifema.ui.LoginScreen
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 
 class MainActivity : ComponentActivity() {
@@ -15,6 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GestionIFEMATheme {
                 IfemaApp()
+
             }
         }
     }
