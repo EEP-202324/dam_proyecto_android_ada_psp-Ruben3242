@@ -1,5 +1,6 @@
 package com.eep.android.gestionifema.api
 
+import com.eep.android.gestionifema.model.Center
 import com.eep.android.gestionifema.model.LoginRequest
 import com.eep.android.gestionifema.model.User
 import com.google.gson.Gson
@@ -7,6 +8,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,7 +31,7 @@ interface ApiService {
     fun getUserById(@Path("id") id: Int): Call<User>//FUNCIONA
 
     @PUT("user/{id}")
-    fun updateUserById(@Query("id") id: Int, @Body user: User): Call<User>
+    fun updateUserById(@Path("id") id: Int, @Body user: User): Call<User>
 
     @DELETE("user/{id}")
     fun deleteUserById(@Query("id") id: Int): Call<User>
@@ -39,6 +41,10 @@ interface ApiService {
 
     @POST("login")
     fun loginUser(@Body request: LoginRequest): Call<User>
+//////////////////////////////////////////////////////////////////////
+    @GET("centers")
+    fun getCenters(): Call<List<Center>>
+
 
 
 }
@@ -47,14 +53,18 @@ private const val BASE_URL = "http://10.0.2.2:8080/"
 
 val gson = GsonBuilder()
     .registerTypeAdapter(User::class.java, object : JsonDeserializer<User> {
-        override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): User? {
-            if (json?.asString.isNullOrEmpty()) {
-                return null
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): User? {
+            // Verificar si el elemento JSON no es un objeto
+            if (!json.isJsonObject) {
+                throw JsonParseException("Expected JSON object")
             }
+
+            // Deserialización de un objeto JSON
             return Gson().fromJson(json, User::class.java)
         }
     })
     .create()
+
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create(gson))
     .baseUrl(BASE_URL)
