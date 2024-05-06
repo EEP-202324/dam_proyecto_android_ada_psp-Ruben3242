@@ -51,6 +51,10 @@ public class CenterService {
         }
         return null;
     }
+
+	public List<Center> getAllCenters() {
+		return centerRepository.findAll();
+	}
 	
 	
 }

@@ -49,7 +49,7 @@ fun LoginScreen(navController: NavHostController) {
             label = R.string.email_message,
             value = email,
             onValueChanged = { email = it },
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.Email
         )
         EditTextField(
             label = R.string.password_message,
@@ -82,8 +82,10 @@ fun performLogin(email: String, password: String, role: String, navController: N
                 Log.d("LoginActivity", "Login successful: $user")
                 // Navegar basado en el rol del usuario
                 if (user != null) {
+
                     if (user.rol == "User") {
-                        navController.navigate(Screen.User)
+                        navController.navigate("userScreen/${user.id}")
+
                     } else if (user.rol == "Owner") {
                         navController.navigate(Screen.Owner)
                     }

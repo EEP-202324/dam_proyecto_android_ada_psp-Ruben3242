@@ -28,18 +28,18 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-    private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
 
-	@GetMapping
-	private ResponseEntity<List<User>> findAll() {
-		List<User> Users = userRepository.findAll();
-		return ResponseEntity.ok(Users);
-	}
+//	@GetMapping
+//	private ResponseEntity<List<User>> findAll() {
+//		List<User> Users = userRepository.findAll();
+//		return ResponseEntity.ok(Users);
+//	}
 
 	@GetMapping("/users")
 	private ResponseEntity<List<User>> findAlll() {
@@ -77,57 +77,32 @@ public class UserController {
 		return ResponseEntity.ok(updatedUser);
 	}
 
-//	@PostMapping("/login")
-//	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-//	    User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
-//	    if (user != null) {
-//	        return ResponseEntity.ok(user);
-//		} else {
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-//	    }
-//	}
-
 	@PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<User> optUser = userRepository.findByEmail(request.getEmail());
-        User user;
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+		Optional<User> optUser = userRepository.findByEmail(request.getEmail());
+		User user;
 
-        // Verifica si el usuario con ese email ya existe
-        if (optUser.isPresent()) {
-            user = optUser.get();
-            // Verifica si el rol y la contraseña son correctos
-            if (user.getRol().equals(request.getRole()) && passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                return ResponseEntity.ok(user);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-            }
-        } else if ("User".equals(request.getRole()) && !request.getEmail().isEmpty()) {
-            // Crear un nuevo usuario si el rol es 'User' y el email no existe
-            User newUser = new User();
-            newUser.setEmail(request.getEmail());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setRol("User");
-            userRepository.save(newUser);
-            return ResponseEntity.ok(newUser);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-        }
-    }
-
-//	@PostMapping("/login")
-//	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-//		User user = userService.loginUser(request.getEmail(), request.getPassword(), request.getRole());
-//		if (user != null) {
-//			// Usuario autenticado correctamente
-//			return ResponseEntity.ok(user);
-//		} else if ("user".equals(request.getRole())) {
-//			// Crear nuevo usuario
-//			User newUser = userService.createUser(request.getEmail(), request.getPassword());
-//			return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-//		} else {
-//			// Usuario existente o credenciales incorrectas
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
-//		}
-//	}
+		// Verifica si el usuario con ese email ya existe
+		if (optUser.isPresent()) {
+			user = optUser.get();
+			// Verifica si el rol y la contraseña son correctos
+			if (user.getRol().equals(request.getRole())
+					&& passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+				return ResponseEntity.ok(user);
+			} else {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+			}
+		} else if ("User".equals(request.getRole()) && !request.getEmail().isEmpty()) {
+			// Crear un nuevo usuario si el rol es 'User' y el email no existe
+			User newUser = new User();
+			newUser.setEmail(request.getEmail());
+			newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+			newUser.setRol("User");
+			userRepository.save(newUser);
+			return ResponseEntity.ok(newUser);
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
+		}
+	}
 
 }
