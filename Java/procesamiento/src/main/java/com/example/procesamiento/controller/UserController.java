@@ -101,7 +101,7 @@ public class UserController {
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas o acceso denegado.");
             }
-        } else if ("User".equals(request.getRole())) {
+        } else if ("User".equals(request.getRole()) && !request.getEmail().isEmpty()) {
             // Crear un nuevo usuario si el rol es 'User' y el email no existe
             User newUser = new User();
             newUser.setEmail(request.getEmail());
