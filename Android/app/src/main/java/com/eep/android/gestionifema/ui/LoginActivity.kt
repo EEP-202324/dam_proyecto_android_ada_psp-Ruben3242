@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.eep.android.gestionifema.IfemaApp
 import com.eep.android.gestionifema.R
 import com.eep.android.gestionifema.api.ApiClient
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
@@ -28,7 +29,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-//var NavHostController: NavHostController = TODO()
 @Composable
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
@@ -51,7 +51,11 @@ fun LoginScreen(navController: NavHostController) {
             onValueChanged = { email = it },
             keyboardType = KeyboardType.Password
         )
-        EditTextField(label = R.string.password_message, value = password, onValueChanged = { password = it }, keyboardType = KeyboardType.Password)
+        EditTextField(
+            label = R.string.password_message,
+            value = password,
+            onValueChanged = { password = it },
+            keyboardType = KeyboardType.Password)
         RoleSelection(selectedRole, onRoleChanged = { selectedRole = it })
 
         Button(onClick = {
@@ -71,25 +75,26 @@ fun LoginScreen(navController: NavHostController) {
 
 fun performLogin(email: String, password: String, role: String, navController: NavHostController) {
     val request = LoginRequest(email, password, role)
-    Log.d("LoginActivity", "Logging in with: Email: $email, Password: $password, Role: $role")
-
     ApiClient.retrofitService.loginUser(request).enqueue(object : Callback<User> {
         override fun onResponse(call: Call<User>, response: Response<User>) {
             if (response.isSuccessful) {
-                Log.d("LoginActivity", "Login successful: ${response.body()}")
-                navController.navigate(Screen.User) {
-                    popUpTo(Screen.Login) { inclusive = true }
+                val user = response.body()
+                Log.d("LoginActivity", "Login successful: $user")
+                // Navegar basado en el rol del usuario
+                if (user != null) {
+                    if (user.rol == "User") {
+                        navController.navigate(Screen.User)
+                    } else if (user.rol == "Owner") {
+                        navController.navigate(Screen.Owner)
+                    }
                 }
             } else {
-                Log.e("LoginActivity", "Login failed with response: ${response.errorBody()?.string()}")
+                Log.e("LoginActivity", "Login error: ${response.errorBody()?.string()}")
             }
         }
 
         override fun onFailure(call: Call<User>, t: Throwable) {
             Log.e("LoginActivity", "Login failed", t)
-//            navController.navigate(Screen.User) {
-//                popUpTo(Screen.Login) { inclusive = true }
-//            }
         }
     })
 }
@@ -117,18 +122,23 @@ fun EditTextField(
 @Composable
 fun RoleSelection(selectedRole: String, onRoleChanged: (String) -> Unit) {
     val roles = listOf("User", "Owner")
-    roles.forEach { role ->
-        Row(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = selectedRole == role,
-                onClick = { onRoleChanged(role) }
-            )
-            Text(role)
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ){
+        roles.forEach { role ->
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = selectedRole == role,
+                    onClick = { onRoleChanged(role) }
+                )
+                Text(role)
+            }
         }
     }
 }
@@ -160,7 +170,7 @@ fun RoleSelection(selectedRole: String, onRoleChanged: (String) -> Unit) {
 @Composable
 fun DefaultPreview() {
     GestionIFEMATheme{
-        LoginScreen(navController = TODO())
+        IfemaApp()
     }
 }
 
