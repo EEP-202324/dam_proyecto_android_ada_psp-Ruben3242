@@ -45,6 +45,9 @@ interface ApiService {
     @GET("centers")
     fun getCenters(): Call<List<Center>>
 
+    @GET("centers/{id}")
+    fun getCenterById(@Path("id") id: Int): Call<Center>
+
 
 
 }

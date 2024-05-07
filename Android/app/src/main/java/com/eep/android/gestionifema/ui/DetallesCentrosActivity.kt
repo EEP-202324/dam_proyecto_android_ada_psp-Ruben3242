@@ -12,13 +12,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.eep.android.gestionifema.R
+import com.eep.android.gestionifema.data.ListaCentros
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CenterDetailScreen(navController: NavHostController, centerName: String, centerDescription: String, imageUrl: String) {
+fun centerDetail(navController: NavHostController, centerId: Int) {
+    val center = findCenterById(centerId)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -45,17 +46,17 @@ fun CenterDetailScreen(navController: NavHostController, centerName: String, cen
                     .fillMaxWidth()
             )
             Text(
-                text = centerName,
+                text = ListaCentros.listaCentros[0].nombreCentro,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(top = 16.dp)
             )
             Text(
-                text = centerDescription,
+                text = ListaCentros.listaCentros[0].descripcion,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Button(
-                onClick = { /* Logica de navegacion o funcion */ },
+                onClick = { navController.navigateUp() },
                 modifier = Modifier.padding(top = 24.dp)
             ) {
                 Text("Salir")
@@ -64,15 +65,16 @@ fun CenterDetailScreen(navController: NavHostController, centerName: String, cen
     }
 }
 
+fun findCenterById(centerId: Int): Any {
+    return ListaCentros.listaCentros[0]
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewCenterDetailScreen() {
     GestionIFEMATheme {
-        CenterDetailScreen(
-            navController = rememberNavController(),
-            centerName = "Universidad de Tecnología",
-            centerDescription = "La Universidad de Tecnología se dedica a ofrecer programas de ingeniería y ciencias aplicadas de alta calidad, enfocados en la innovación y el desarrollo tecnológico. Situada en un campus moderno y equipado con laboratorios de última generación, la universidad es un referente en la educación técnica superior.",
-            imageUrl = "url_to_the_image"
-        )
+//        CenterDetailScreen(
+//            navController = rememberNavController(),
+//        )
     }
 }

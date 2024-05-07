@@ -37,6 +37,12 @@ public class CenterController {
 		return ResponseEntity.ok(centers);
 	}
     
+    @GetMapping("/centers/{id}")
+	public ResponseEntity<Center> getCenter(@PathVariable Integer id) {
+		Center center = centerService.getCenter(id);
+		return ResponseEntity.ok(center);
+	}
+    
     @PostMapping("/centers")
     public ResponseEntity<Center> addCenter(@RequestBody Center center) {
         Center newCenter = centerService.saveCenter(center);

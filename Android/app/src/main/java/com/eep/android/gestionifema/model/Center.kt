@@ -5,7 +5,7 @@ data class Center(
     val nombreCentro: String,
     val paginaWeb: String,
     val type: String?,  // Asumiendo que type puede ser nulo, ajusta según tu modelo real
-    var isExpanded: Boolean = false,
+
     val descripcion: String
 )
 //data class Center(

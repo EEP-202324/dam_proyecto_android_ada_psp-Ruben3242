@@ -55,6 +55,10 @@ public class CenterService {
 	public List<Center> getAllCenters() {
 		return centerRepository.findAll();
 	}
+
+	public Center getCenter(Integer id) {
+		return centerRepository.findById(id).orElse(null);
+	}
 	
 	
 }

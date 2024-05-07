@@ -3,6 +3,8 @@ package com.eep.android.gestionifema.ui
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -59,66 +61,65 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-
+        Row {
+            Button(
+                onClick = {
+                    addUser(userId, nombre, edad, selectedCenter)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Guardar")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(
+                onClick = {
+                    navController.navigate(Screen.Login)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Cerrar sesión")
+            }
+        }
+//        Row {
+//            Spacer(modifier = Modifier.height(16.dp))
+//            Button(onClick = { }) {
+//                Text("Cerrar sesión")
+//            }
+//
+//            // Botón para terminar de tramitar todo
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Button(
+//                onClick = {
+////                navController.navigate(Screen.TramiteFinalizado);
+//                    addUser(userId, nombre, edad, selectedCenter)
+//                    // Navegar a la pantalla de trámite finalizado
+//                }
+//            ) {
+//                Text("Tramitar")
+//            }
+//        }
 
         Text("Centros:", style = MaterialTheme.typography.headlineSmall)
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            listaCentros.forEachIndexed { index, center ->
+        LazyColumn {
+            items(listaCentros) { center ->
                 CenterListItem(center = center, navController = navController) {
-                    // Aquí implementas la lógica de expansión
                     val newCenter = center.copy(
-                        isExpanded = !center.isExpanded,
-                        type = center.type ?: "Default Type"  // Asegura que 'type' no sea nulo
+//                        isExpanded = !center.isExpanded,
+                        type = center.type ?: "Default Type"
                     )
-                    listaCentros[index] = newCenter  // Actualiza el elemento en la lista
+                    listaCentros[listaCentros.indexOf(center)] = newCenter
                 }
             }
         }
+
+
 
 
         // Botón para obtener más información del centro seleccionado
-        Button(
-            onClick = {
-                selectedCenter?.let { center ->
-                    // Aquí iría la lógica para mostrar más información del centro
-                }
-            },
-            enabled = selectedCenter != null
-        ) {
-            Text("Obtener más información del centro")
-        }
 
-        // Botón para añadir el centro seleccionado al usuario
-        Button(
-            onClick = {
-                selectedCenter?.let { center ->
-                    // Aquí iría la lógica para añadir el centro al usuario
-                    // Por ejemplo:
-                    // usuario.centrosVisita.add(center.nombre)
-                }
-            },
-            enabled = selectedCenter != null
-        ) {
-            Text("Añadir centro al usuario")
-        }
 
         // Botón para cerrar sesión y volver al login
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { navController.navigate(Screen.Login) }) {
-            Text("Cerrar sesión")
-        }
 
-        // Botón para terminar de tramitar todo
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-//                navController.navigate(Screen.TramiteFinalizado);
-                addUser(userId, nombre, edad, selectedCenter)
-            // Navegar a la pantalla de trámite finalizado
-            }
-        ) {
-            Text("Tramitar")
-        }
     }
 }
 
@@ -139,7 +140,10 @@ fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) 
                 Log.d("UserScreen", "Usuario actualizado correctamente")
                 // Aquí puedes manejar navegación o mostrar un mensaje de éxito
             } else {
-                Log.e("UserScreen", "Error al actualizar el usuario: ${response.errorBody()?.string()}")
+                Log.e(
+                    "UserScreen",
+                    "Error al actualizar el usuario: ${response.errorBody()?.string()}"
+                )
             }
         }
 
@@ -148,16 +152,21 @@ fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) 
         }
     })
 }
+
 @Composable
-fun CenterListItem(center: Center, navController: NavHostController, onExpandClick: (Center) -> Unit) {
+fun CenterListItem(
+    center: Center,
+    navController: NavHostController,
+    onExpandClick: (Center) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navController.navigate("centerDetail/${center.id}") },
+            .clickable { navController.navigate("centerDetail/${center.id}") },  // Asegúrate de que center.id es un Int
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
+    )  {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -171,10 +180,10 @@ fun CenterListItem(center: Center, navController: NavHostController, onExpandCli
             Column {
                 Text(center.nombreCentro, style = MaterialTheme.typography.titleMedium)
                 Text(center.paginaWeb, style = MaterialTheme.typography.bodySmall)
-                if (center.isExpanded) {
-                    // Asumiendo que tienes más información para mostrar cuando está expandido
-                    Text("Información adicional aquí")
-                }
+//                if (center.isExpanded) {
+//                    // Asumiendo que tienes más información para mostrar cuando está expandido
+//                    Text("Información adicional aquí")
+//                }
             }
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
@@ -190,22 +199,20 @@ fun CenterListItem(center: Center, navController: NavHostController, onExpandCli
 }
 
 
-
 fun obtenerCentros() {
     ApiClient.retrofitService.getCenters().enqueue(object : Callback<List<Center>> {
-    override fun onResponse(call: Call<List<Center>>, response: Response<List<Center>>) {
+        override fun onResponse(call: Call<List<Center>>, response: Response<List<Center>>) {
             if (response.isSuccessful) {
                 listaCentros = response.body() as MutableList<Center>
                 Log.d("UserScreen", "Centros obtenidos: $listaCentros")
             }
         }
+
         override fun onFailure(call: Call<List<Center>>, t: Throwable) {
             Log.e("UserScreen", "Error al obtener los centros", t)
         }
     })
 }
-
-
 
 
 @Preview(showBackground = true)
@@ -215,3 +222,13 @@ fun PreviewUserScreen() {
         UserScreen(navController = rememberNavController(), userId = 1)
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun centros() {
+    GestionIFEMATheme {
+        CenterListItem(center = Center(1, "Centro de Prueba", "www", "Type", "Esta es la descripscion"), navController = rememberNavController()) {
+
+        }
+    }
+}
+

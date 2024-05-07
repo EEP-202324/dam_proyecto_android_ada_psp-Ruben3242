@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.eep.android.gestionifema.ui.CenterDetailScreen
+import com.eep.android.gestionifema.ui.centerDetail
 
 import com.eep.android.gestionifema.ui.LoginScreen
 import com.eep.android.gestionifema.ui.OwnerScreen
@@ -37,14 +37,12 @@ fun IfemaApp() {
                 composable(Screen.Owner) {
                     OwnerScreen(navController)
                 }
-                composable(Screen.CenterDetail) { backStackEntry ->
-                    // Supongamos que pasamos los datos necesarios como argumentos o a través de ViewModel
-                    CenterDetailScreen(
-                        navController = navController,
-                        centerName = "Nombre del Centro",  // Estos deberían ser argumentos pasados
-                        centerDescription = "Descripción del Centro",
-                        imageUrl = "URL de la imagen"
-                    )
+                composable(
+                    route = "centerDetail/{centerId}",
+                    arguments = listOf(navArgument("centerId") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val centerId = backStackEntry.arguments?.getInt("centerId") ?: 0
+                    centerDetail(navController, centerId)
                 }
             }
         }
