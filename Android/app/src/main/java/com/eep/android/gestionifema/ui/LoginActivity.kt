@@ -53,7 +53,7 @@ fun LoginScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var selectedRole by remember { mutableStateOf("User") }
-    var errorMessage by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -75,7 +75,7 @@ fun LoginScreen(navController: NavHostController) {
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("LOGIN", style = MaterialTheme.typography.headlineMedium)
+                Text("Login / Register", style = MaterialTheme.typography.headlineMedium)
 
                 OutlinedTextField(
                     value = email,
@@ -149,7 +149,7 @@ fun LoginScreen(navController: NavHostController) {
 }
 
 
-fun performLogin(email: String, password: String, role: String, navController: NavHostController) : Boolean{
+fun performLogin(email: String, password: String, role: String, navController: NavHostController) {
     val request = LoginRequest(email, password, role)
     ApiClient.retrofitService.loginUser(request).enqueue(object : Callback<User> {
         override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -176,7 +176,6 @@ fun performLogin(email: String, password: String, role: String, navController: N
             Log.e("LoginActivity", "Login failed", t)
         }
     })
-    return true
 }
 
 
