@@ -77,42 +77,18 @@ fun LoginScreen(navController: NavHostController) {
             ) {
                 Text("Login / Register", style = MaterialTheme.typography.headlineMedium)
 
-                OutlinedTextField(
+                EditTextField(
+                    label = R.string.email_message,
                     value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email/Mobile") },
-                    leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    )
+                    onValueChanged = { email = it },
+                    keyboardType = KeyboardType.Email
                 )
-
-                OutlinedTextField(
+                EditTextField(
+                    label = R.string.password_message,
                     value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password") },
-                    trailingIcon = {
-                        val image = if (passwordVisible)
-                            Icons.Filled.Visibility
-                        else
-                            Icons.Filled.VisibilityOff
-
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = "Toggle password visibility")
-                        }
-                    },
-                    singleLine = true,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    )
-                )
+                    onValueChanged = { password = it },
+                    keyboardType = KeyboardType.Password)
+//                RoleSelection(selectedRole, onRoleChanged = { selectedRole = it })
 
                 Column(
                     modifier = Modifier
