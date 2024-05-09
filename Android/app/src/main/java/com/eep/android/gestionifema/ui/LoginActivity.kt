@@ -81,14 +81,30 @@ fun LoginScreen(navController: NavHostController) {
                     label = R.string.email_message,
                     value = email,
                     onValueChanged = { email = it },
-                    keyboardType = KeyboardType.Email
+                    keyboardType = KeyboardType.Email,
+                    leadingIcon = {
+                        Icon(Icons.Filled.Email, contentDescription = "Email Icon")
+                    }
                 )
+
+                // Campo de texto para la contraseña
                 EditTextField(
                     label = R.string.password_message,
                     value = password,
                     onValueChanged = { password = it },
-                    keyboardType = KeyboardType.Password)
-//                RoleSelection(selectedRole, onRoleChanged = { selectedRole = it })
+                    keyboardType = KeyboardType.Password,
+                    leadingIcon = {
+                        Icon(Icons.Filled.Lock, contentDescription = "Lock Icon")
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                contentDescription = "Toggle Password Visibility"
+                            )
+                        }
+                    }
+                )
 
                 Column(
                     modifier = Modifier
@@ -155,24 +171,32 @@ fun performLogin(email: String, password: String, role: String, navController: N
 }
 
 
+
 @Composable
 fun EditTextField(
     @StringRes label: Int,
     value: String,
     onValueChanged: (String) -> Unit,
-    keyboardType: KeyboardType
+    keyboardType: KeyboardType,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChanged,
         singleLine = true,
         label = { Text(stringResource(label)) },
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = if (label == R.string.password_message) KeyboardType.Password else KeyboardType.Text,
+            keyboardType = keyboardType,
             imeAction = if (label == R.string.password_message) ImeAction.Done else ImeAction.Next
-        )
+        ),
+        visualTransformation = if (keyboardType == KeyboardType.Password) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
+
+
 
 @Composable
 fun RoleSelection(selectedRole: String, onRoleChanged: (String) -> Unit) {
