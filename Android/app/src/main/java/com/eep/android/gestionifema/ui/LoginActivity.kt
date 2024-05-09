@@ -77,30 +77,32 @@ fun LoginScreen(navController: NavHostController) {
             ) {
                 Text("Login / Register", style = MaterialTheme.typography.headlineMedium)
 
+                // Campo de Email
                 EditTextField(
                     label = R.string.email_message,
                     value = email,
                     onValueChanged = { email = it },
                     keyboardType = KeyboardType.Email,
-                    leadingIcon = {
-                        Icon(Icons.Filled.Email, contentDescription = "Email Icon")
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Email,
+                            contentDescription = "Email"
+                        )
                     }
                 )
 
-                // Campo de texto para la contraseña
+                // Campo de Contraseña
                 EditTextField(
                     label = R.string.password_message,
                     value = password,
                     onValueChanged = { password = it },
                     keyboardType = KeyboardType.Password,
-                    leadingIcon = {
-                        Icon(Icons.Filled.Lock, contentDescription = "Lock Icon")
-                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = "Toggle Password Visibility"
+                                contentDescription = if (passwordVisible) "Hide Password" else "Show Password"
                             )
                         }
                     }
@@ -178,23 +180,28 @@ fun EditTextField(
     value: String,
     onValueChanged: (String) -> Unit,
     keyboardType: KeyboardType,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChanged,
         singleLine = true,
-        label = { Text(stringResource(label)) },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
+        label = { Text(stringResource(label)) },
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = keyboardType,
             imeAction = if (label == R.string.password_message) ImeAction.Done else ImeAction.Next
         ),
-        visualTransformation = if (keyboardType == KeyboardType.Password) PasswordVisualTransformation() else VisualTransformation.None
+        visualTransformation = visualTransformation,
+
+
     )
 }
+
+
 
 
 
