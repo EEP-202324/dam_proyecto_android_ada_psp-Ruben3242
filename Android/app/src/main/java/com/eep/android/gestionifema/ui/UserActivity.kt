@@ -31,7 +31,7 @@ import retrofit2.Response
 
 
 var listaCentros = mutableListOf<Center>()
-
+var Usuario = User(0, "", "", "", 0, "", "")
 
 @Composable
 fun UserScreen(navController: NavHostController, userId: Int) {
@@ -41,6 +41,7 @@ fun UserScreen(navController: NavHostController, userId: Int) {
 
     LaunchedEffect(key1 = Unit) {
         obtenerCentros()
+        obtenerUsuario(userId)
     }
     Column(modifier = Modifier.padding(16.dp)) {
         // Formulario para introducir nombre y edad
@@ -123,13 +124,43 @@ fun UserScreen(navController: NavHostController, userId: Int) {
     }
 }
 
+fun obtenerUsuario(userId: Int) {
+    ApiClient.retrofitService.getUserById(userId).enqueue(object : Callback<User> {
+        override fun onResponse(call: Call<User>, response: Response<User>) {
+            if (response.isSuccessful) {
+                val user = response.body()
+                if (user != null) {
+                    Log.d("UserScreen", "Usuario obtenido: $user")
+                    Usuario = user
+
+
+                }
+            }
+        }
+
+        override fun onFailure(call: Call<User>, t: Throwable) {
+            Log.e("UserScreen", "Error al obtener el usuario", t)
+        }
+    })
+
+}
+// fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
+//     val response = ApiClient.retrofitService.updateUserById(userId, User(id = userId, nombre = nombre, email = "", password = "", rol = "", centroVisita = selectedCenter?.nombreCentro ?: "", edad = edad.toIntOrNull() ?: 0))
+//        if (response.isCanceled) {
+//            Log.d("UserScreen", "Usuario actualizado correctamente")
+//        } else {
+//            Log.e("UserScreen", "Error al actualizar el usuario: ${response.isCanceled?.equals(false)}")
+//        }
+
+// }
+
 fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
     val updatedUser = User(
         id = userId,
         nombre = nombre,
-        email = "",  // Debes manejar este valor de acuerdo a tus necesidades
-        password = "",  // Idealmente no deberías manejar contraseñas así
-        rol = "",  // Actualiza según corresponda
+        email = Usuario.email,  // Debes manejar este valor de acuerdo a tus necesidades
+        password = Usuario.password,  // Idealmente no deberías manejar contraseñas así
+        rol = Usuario.rol,  // Actualiza según corresponda
         centroVisita = selectedCenter?.nombreCentro ?: "",
         edad = edad.toIntOrNull() ?: 0
     )
@@ -138,19 +169,16 @@ fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) 
         override fun onResponse(call: Call<User>, response: Response<User>) {
             if (response.isSuccessful) {
                 Log.d("UserScreen", "Usuario actualizado correctamente")
-                // Aquí puedes manejar navegación o mostrar un mensaje de éxito
             } else {
-                Log.e(
-                    "UserScreen",
-                    "Error al actualizar el usuario: ${response.errorBody()?.string()}"
-                )
+                Log.e("UserScreen", "Error al actualizar el usuario: ${response.errorBody()?.string()}")
             }
         }
 
         override fun onFailure(call: Call<User>, t: Throwable) {
-            Log.e("UserScreen", "Fallo al actualizar el usuario", t)
+            Log.e("UserScreen", "Error al actualizar el usuario", t)
         }
     })
+
 }
 
 @Composable
