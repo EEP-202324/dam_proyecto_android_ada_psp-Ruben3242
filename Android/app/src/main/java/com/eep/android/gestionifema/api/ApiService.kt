@@ -10,6 +10,7 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -25,28 +26,28 @@ import java.lang.reflect.Type
 interface ApiService {
 
     @GET
-    fun getUsers(): Call<List<User>>
+    fun getUsers(): Response<List<User>>
 
     @GET("user/{id}")
-    fun getUserById(@Path("id") id: Int): Call<User>//FUNCIONA
+    fun getUserById(@Path("id") id: Int): Response<User>//FUNCIONA
 
     @PUT("user/{id}")
-    fun updateUserById(@Path("id") id: Int, @Body user: User): Call<User>
+    fun updateUserById(@Path("id") id: Int, @Body user: User): Response<User>
 
     @DELETE("user/{id}")
-    fun deleteUserById(@Query("id") id: Int): Call<User>
+    fun deleteUserById(@Query("id") id: Int): Response<User>
 
     @POST("user")
-    fun createUser(@Body user: User): Call<User>
+    fun createUser(@Body user: User): Response<User>
 
     @POST("login")
-    fun loginUser(@Body request: LoginRequest): Call<User>
+    suspend fun loginUser(@Body request: LoginRequest): Response<User>
 //////////////////////////////////////////////////////////////////////
     @GET("centers")
-    fun getCenters(): Call<List<Center>>
+    fun getCenters(): Response<List<Center>>
 
     @GET("centers/{id}")
-    fun getCenterById(@Path("id") id: Int): Call<Center>
+    fun getCenterById(@Path("id") id: Int): Response<Center>
 
 
 
