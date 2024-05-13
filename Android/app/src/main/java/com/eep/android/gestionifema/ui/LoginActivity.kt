@@ -125,8 +125,13 @@ fun LoginScreen(navController: NavHostController) {
                 Button(
                     onClick = {  viewModel.loginUser(email, password, selectedRole, onSuccess = { user ->
                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+
                         if (user != null) {
-                            navController.navigate("userScreen/${user.id}")
+                            if (user.rol == "Owner") {
+                                navController.navigate(Screen.Owner)
+                            } else if (user.rol == "User") {
+                                navController.navigate("userScreen/${user.id}")
+                            }
                         }
                     }, onError = { error ->
                         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()

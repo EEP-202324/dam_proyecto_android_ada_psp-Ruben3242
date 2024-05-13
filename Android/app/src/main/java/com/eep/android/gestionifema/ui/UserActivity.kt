@@ -34,6 +34,7 @@ import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 import com.eep.android.gestionifema.viewmodel.UserViewModel
 
 var userUpda = User(0, "", "", "", 0, "", "")
+
 @Composable
 fun UserScreen(navController: NavHostController, userId: Int) {
     val viewModel: UserViewModel = viewModel()
@@ -42,12 +43,12 @@ fun UserScreen(navController: NavHostController, userId: Int) {
     val context = LocalContext.current
     val selectedCenters = remember { mutableStateListOf<Center>() }
 
-    var selectedCenter by remember { mutableStateOf<Center?>(null) }
+//    var selectedCenter by remember { mutableStateOf<Center?>(null) }
     var showSelectedCenters by remember { mutableStateOf(false) }
 
 
-    var nombre by remember { mutableStateOf(user?.nombre ?: "") }
-    var edad by remember { mutableStateOf(user?.edad.toString()) }
+    var nombre by remember { mutableStateOf(userUpda.nombre) }
+    var edad by remember { mutableStateOf(userUpda.edad.toString()) }
 
 
 
@@ -74,35 +75,28 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Button(
-            onClick = {showSelectedCenters = !showSelectedCenters }
-        ) {
-            Text("Mis Centros")
-        }
-
-        if (showSelectedCenters) {
+        Text(text = "Centro de visita:", style = MaterialTheme.typography.headlineSmall)
             selectedCenters.forEach { center ->
                 CenterCard(center)
             }
 
-            }
-
-
-//        DropdownMenuCentros(centers = centers, selectedCenter = ) { center ->
-//            selectedCenter = center
-//        }
         Row {
             Button(
-                onClick = {val updatedUser = userUpda.copy(
-                    nombre = nombre,
-                    edad = edad.toIntOrNull() ?: user?.edad ?: 0,
-                    centroVisita = selectedCenters.joinToString { it.nombreCentro },
-                    email = user?.email ?: "",  // Mantén el email existente
-                     // Mantén la contraseña existente
-                    rol = user?.rol ?: ""  // Mantén el rol existente
-                )
+                onClick = {
+                    val updatedUser = userUpda.copy(
+                        nombre = nombre,
+                        edad = edad.toIntOrNull() ?: 0,
+                        centroVisita = selectedCenters.joinToString { it.nombreCentro },
+                        email = user?.email ?: "",  // Mantén el email existente
+                        // Mantén la contraseña existente
+                        rol = user?.rol ?: ""  // Mantén el rol existente
+                    )
                     viewModel.updateUser(userId, updatedUser, onSuccess = {
-                        Toast.makeText(context, "Usuario actualizado correctamente", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Usuario actualizado correctamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }, onError = { error ->
                         Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                     })
@@ -165,7 +159,7 @@ fun CenterCard(center: Center) {
 suspend fun obtenerUsuario(userId: Int) {
     var response = ApiClient.retrofitService.getUserById(userId)
     if (response.isSuccessful) {
-         userUpda = response.body()!!
+        userUpda = response.body()!!
         Log.d("UserScreen", "Usuario obtenido: $userUpda")
     } else {
         Log.e("UserScreen", "Error al obtener el usuario: ${response.errorBody()?.string()}")
