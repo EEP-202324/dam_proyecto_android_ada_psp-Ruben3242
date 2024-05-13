@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.eep.android.gestionifema.ui.AddCenterScreen
 
 
 import com.eep.android.gestionifema.ui.LoginScreen
@@ -28,7 +29,7 @@ fun IfemaApp() {
         Scaffold { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.Owner,
+                startDestination = Screen.Login,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Login) {
@@ -48,6 +49,9 @@ fun IfemaApp() {
                     arguments = listOf(navArgument("url") { type = NavType.StringType })
                 ) { backStackEntry ->
                     WebViewScreen(url = backStackEntry.arguments?.getString("url") ?: "")
+                }
+                composable(Screen.Center) {
+                    AddCenterScreen(navController, viewModel())
                 }
             }
         }

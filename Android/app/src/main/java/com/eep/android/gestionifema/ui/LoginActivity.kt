@@ -271,7 +271,7 @@ fun RoleSelection(selectedRole: String, onRoleChanged: (String) -> Unit) {
 @Composable
 fun DefaultPreview() {
     GestionIFEMATheme{
-        IfemaApp()
+        LoginScreen(navController = NavHostController(LocalContext.current))
     }
 }
 

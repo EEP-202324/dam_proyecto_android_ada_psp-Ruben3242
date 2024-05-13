@@ -58,6 +58,7 @@ class OwnerViewModel : ViewModel() {
             try {
                 val response = ApiClientCenters.retrofitService.updateCenterById(centerId, updatedCenter)
                 if (response.isSuccessful) {
+                    getCenters()
                     onSuccess()
                 } else {
                     onError(response.errorBody()?.string() ?: "Unknown error")
@@ -72,13 +73,17 @@ class OwnerViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = ApiClientCenters.retrofitService.createCenter(center)
+                Log.d("API Call", "URL: ${center}")
+                Log.d("API Call", "Response: ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
+                    _centers.value += response.body()!!
                     onSuccess()
                 } else {
-                    onError(response.errorBody()?.string() ?: "Unknown error")
+                    onError("Error: ${response.code()} ${response.message()}")
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Unknown error")
+                Log.e("API Error", "Fallo de red: ${e.localizedMessage}", e)
+                onError("Fallo de red: ${e.localizedMessage}")
             }
         }
     }
@@ -86,10 +91,16 @@ class OwnerViewModel : ViewModel() {
     fun deleteCenter(centerId: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                ApiClientCenters.retrofitService.deleteCenterById(centerId)
-                onSuccess()
+                val response = ApiClientCenters.retrofitService.deleteCenterById(centerId)
+                if (response.isSuccessful) {
+                    _centers.value = _centers.value.filter { it.id != centerId }
+                    getCenters()  // Recargar la lista completa desde el servidor
+                    onSuccess()
+                } else {
+                    onError("Error al eliminar: ${response.code()} ${response.message()}")
+                }
             } catch (e: Exception) {
-                onError(e.message ?: "Unknown error")
+                onError("Fallo de red: ${e.localizedMessage}")
             }
         }
     }
