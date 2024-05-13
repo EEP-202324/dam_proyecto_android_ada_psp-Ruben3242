@@ -29,10 +29,10 @@ interface ApiService {
     fun getUsers(): Response<List<User>>
 
     @GET("user/{id}")
-    fun getUserById(@Path("id") id: Int): Response<User>//FUNCIONA
+    suspend fun getUserById(@Path("id") id: Int): Response<User>//FUNCIONA
 
     @PUT("user/{id}")
-    fun updateUserById(@Path("id") id: Int, @Body user: User): Response<User>
+    suspend fun updateUserById(@Path("id") id: Int, @Body user: User): Response<User>
 
     @DELETE("user/{id}")
     fun deleteUserById(@Query("id") id: Int): Response<User>
@@ -44,7 +44,7 @@ interface ApiService {
     suspend fun loginUser(@Body request: LoginRequest): Response<User>
 //////////////////////////////////////////////////////////////////////
     @GET("centers")
-    fun getCenters(): Response<List<Center>>
+    suspend fun getCenters(): Response<List<Center>>
 
     @GET("centers/{id}")
     fun getCenterById(@Path("id") id: Int): Response<Center>

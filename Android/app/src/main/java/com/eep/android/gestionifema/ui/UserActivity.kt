@@ -1,6 +1,7 @@
 package com.eep.android.gestionifema.ui
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,37 +11,50 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.eep.android.gestionifema.api.ApiClient
 import com.eep.android.gestionifema.model.Center
 import com.eep.android.gestionifema.model.User
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.eep.android.gestionifema.viewmodel.UserViewModel
 
-
-var listaCentros = mutableListOf<Center>()
-var Usuario = User(0, "", "", "", 0, "", "")
-
+var userUpda = User(0, "", "", "", 0, "", "")
 @Composable
 fun UserScreen(navController: NavHostController, userId: Int) {
-    var nombre by remember { mutableStateOf("") }
-    var edad by remember { mutableStateOf("") }
-    var selectedCenter by remember { mutableStateOf<Center?>(null) }
+    val viewModel: UserViewModel = viewModel()
+    val user by viewModel.user.collectAsState()
+    val centers by viewModel.centers.collectAsState()
+    val context = LocalContext.current
+    val selectedCenters = remember { mutableStateListOf<Center>() }
 
-    LaunchedEffect(key1 = Unit) {
-        obtenerCentros()
+    var selectedCenter by remember { mutableStateOf<Center?>(null) }
+    var showSelectedCenters by remember { mutableStateOf(false) }
+
+
+    var nombre by remember { mutableStateOf(user?.nombre ?: "") }
+    var edad by remember { mutableStateOf(user?.edad.toString()) }
+
+
+
+
+    LaunchedEffect(key1 = userId) {
+        viewModel.getUserById(userId)
+        viewModel.getCenters()
         obtenerUsuario(userId)
     }
     Column(modifier = Modifier.padding(16.dp)) {
@@ -51,9 +65,7 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             label = { Text("Nombre") },
             modifier = Modifier.fillMaxWidth(),
         )
-//        CenterListItem(center = Center(1, "Centro de Prueba", 2, "Type", "Prueba")) {
-//
-//        }
+
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = edad,
@@ -62,11 +74,40 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
+        Button(
+            onClick = {showSelectedCenters = !showSelectedCenters }
+        ) {
+            Text("Mis Centros")
+        }
+
+        if (showSelectedCenters) {
+            selectedCenters.forEach { center ->
+                CenterCard(center)
+            }
+
+            }
+
+
+//        DropdownMenuCentros(centers = centers, selectedCenter = ) { center ->
+//            selectedCenter = center
+//        }
         Row {
             Button(
-                onClick = {
-                    addUser(userId, nombre, edad, selectedCenter)
+                onClick = {val updatedUser = userUpda.copy(
+                    nombre = nombre,
+                    edad = edad.toIntOrNull() ?: user?.edad ?: 0,
+                    centroVisita = selectedCenters.joinToString { it.nombreCentro },
+                    email = user?.email ?: "",  // Mantén el email existente
+                     // Mantén la contraseña existente
+                    rol = user?.rol ?: ""  // Mantén el rol existente
+                )
+                    viewModel.updateUser(userId, updatedUser, onSuccess = {
+                        Toast.makeText(context, "Usuario actualizado correctamente", Toast.LENGTH_SHORT).show()
+                    }, onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                    })
                 },
+
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Guardar")
@@ -81,39 +122,17 @@ fun UserScreen(navController: NavHostController, userId: Int) {
                 Text("Cerrar sesión")
             }
         }
-//        Row {
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Button(onClick = { }) {
-//                Text("Cerrar sesión")
-//            }
-//
-//            // Botón para terminar de tramitar todo
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Button(
-//                onClick = {
-////                navController.navigate(Screen.TramiteFinalizado);
-//                    addUser(userId, nombre, edad, selectedCenter)
-//                    // Navegar a la pantalla de trámite finalizado
-//                }
-//            ) {
-//                Text("Tramitar")
-//            }
-//        }
 
         Text("Centros:", style = MaterialTheme.typography.headlineSmall)
         LazyColumn {
-            items(listaCentros) { center ->
-                CenterListItem(center = center, navController = navController) {
-                    val newCenter = center.copy(
-//                        isExpanded = !center.isExpanded,
-                        type = center.type ?: "Default Type"
-                    )
-                    listaCentros[listaCentros.indexOf(center)] = newCenter
-                }
+            items(centers) { center ->
+                CenterListItem(center, onClick = {
+                    if (!selectedCenters.contains(center)) {
+                        selectedCenters.add(center)
+                    }
+                })
             }
         }
-
-
 
 
         // Botón para obtener más información del centro seleccionado
@@ -124,24 +143,33 @@ fun UserScreen(navController: NavHostController, userId: Int) {
     }
 }
 
-fun obtenerUsuario(userId: Int) {
-    ApiClient.retrofitService.getUserById(userId).enqueue(object : Callback<User> {
-        override fun onResponse(call: Call<User>, response: Response<User>) {
-            if (response.isSuccessful) {
-                val user = response.body()
-                if (user != null) {
-                    Log.d("UserScreen", "Usuario obtenido: $user")
-                    Usuario = user
-
-
-                }
-            }
+@Composable
+fun CenterCard(center: Center) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(center.nombreCentro, style = MaterialTheme.typography.titleMedium)
+            Text(center.paginaWeb, style = MaterialTheme.typography.bodySmall)
         }
+    }
+}
 
-        override fun onFailure(call: Call<User>, t: Throwable) {
-            Log.e("UserScreen", "Error al obtener el usuario", t)
-        }
-    })
+
+suspend fun obtenerUsuario(userId: Int) {
+    var response = ApiClient.retrofitService.getUserById(userId)
+    if (response.isSuccessful) {
+         userUpda = response.body()!!
+        Log.d("UserScreen", "Usuario obtenido: $userUpda")
+    } else {
+        Log.e("UserScreen", "Error al obtener el usuario: ${response.errorBody()?.string()}")
+    }
 
 }
 // fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
@@ -154,47 +182,45 @@ fun obtenerUsuario(userId: Int) {
 
 // }
 
-fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
-    val updatedUser = User(
-        id = userId,
-        nombre = nombre,
-        email = Usuario.email,  // Debes manejar este valor de acuerdo a tus necesidades
-        password = Usuario.password,  // Idealmente no deberías manejar contraseñas así
-        rol = Usuario.rol,  // Actualiza según corresponda
-        centroVisita = selectedCenter?.nombreCentro ?: "",
-        edad = edad.toIntOrNull() ?: 0
-    )
-
-    ApiClient.retrofitService.updateUserById(userId, updatedUser).enqueue(object : Callback<User> {
-        override fun onResponse(call: Call<User>, response: Response<User>) {
-            if (response.isSuccessful) {
-                Log.d("UserScreen", "Usuario actualizado correctamente")
-            } else {
-                Log.e("UserScreen", "Error al actualizar el usuario: ${response.errorBody()?.string()}")
-            }
-        }
-
-        override fun onFailure(call: Call<User>, t: Throwable) {
-            Log.e("UserScreen", "Error al actualizar el usuario", t)
-        }
-    })
-
-}
+//fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
+//    val updatedUser = User(
+//        id = userId,
+//        nombre = nombre,
+//        email = Usuario.email,  // Debes manejar este valor de acuerdo a tus necesidades
+//        password = Usuario.password,  // Idealmente no deberías manejar contraseñas así
+//        rol = Usuario.rol,  // Actualiza según corresponda
+//        centroVisita = selectedCenter?.nombreCentro ?: "",
+//        edad = edad.toIntOrNull() ?: 0
+//    )
+//
+//    ApiClient.retrofitService.updateUserById(userId, updatedUser).enqueue(object : Callback<User> {
+//        override fun onResponse(call: Call<User>, response: Response<User>) {
+//            if (response.isSuccessful) {
+//                Log.d("UserScreen", "Usuario actualizado correctamente")
+//            } else {
+//                Log.e("UserScreen", "Error al actualizar el usuario: ${response.errorBody()?.string()}")
+//            }
+//        }
+//
+//        override fun onFailure(call: Call<User>, t: Throwable) {
+//            Log.e("UserScreen", "Error al actualizar el usuario", t)
+//        }
+//    })
+//
+//}
 
 @Composable
 fun CenterListItem(
     center: Center,
-    navController: NavHostController,
-    onExpandClick: (Center) -> Unit
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .clickable { navController.navigate("centerDetail/${center.id}") },  // Asegúrate de que center.id es un Int
+            .padding(8.dp),
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    )  {
+    ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -208,39 +234,33 @@ fun CenterListItem(
             Column {
                 Text(center.nombreCentro, style = MaterialTheme.typography.titleMedium)
                 Text(center.paginaWeb, style = MaterialTheme.typography.bodySmall)
-//                if (center.isExpanded) {
-//                    // Asumiendo que tienes más información para mostrar cuando está expandido
-//                    Text("Información adicional aquí")
-//                }
+
             }
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
-                onClick = {
-                    // Aquí es donde usas el código para expandir y actualizar el objeto
-                    onExpandClick(center)
-                }
+                onClick = onClick
             ) {
-                Icon(Icons.Default.Info, contentDescription = "Más información")
+                Icon(Icons.Default.Add, contentDescription = "Añadir")
             }
         }
     }
 }
 
 
-fun obtenerCentros() {
-    ApiClient.retrofitService.getCenters().enqueue(object : Callback<List<Center>> {
-        override fun onResponse(call: Call<List<Center>>, response: Response<List<Center>>) {
-            if (response.isSuccessful) {
-                listaCentros = response.body() as MutableList<Center>
-                Log.d("UserScreen", "Centros obtenidos: $listaCentros")
-            }
-        }
-
-        override fun onFailure(call: Call<List<Center>>, t: Throwable) {
-            Log.e("UserScreen", "Error al obtener los centros", t)
-        }
-    })
-}
+//fun obtenerCentros() {
+//    ApiClient.retrofitService.getCenters().enqueue(object : Callback<List<Center>> {
+//        override fun onResponse(call: Call<List<Center>>, response: Response<List<Center>>) {
+//            if (response.isSuccessful) {
+//                listaCentros = response.body() as MutableList<Center>
+//                Log.d("UserScreen", "Centros obtenidos: $listaCentros")
+//            }
+//        }
+//
+//        override fun onFailure(call: Call<List<Center>>, t: Throwable) {
+//            Log.e("UserScreen", "Error al obtener los centros", t)
+//        }
+//    })
+//}
 
 
 @Preview(showBackground = true)
@@ -250,13 +270,36 @@ fun PreviewUserScreen() {
         UserScreen(navController = rememberNavController(), userId = 1)
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun centros() {
     GestionIFEMATheme {
-        CenterListItem(center = Center(1, "Centro de Prueba", "www", "Type", "Esta es la descripscion"), navController = rememberNavController()) {
-
+        CenterListItem(
+            center = Center(
+                1,
+                "Centro de Prueba",
+                "www",
+                "Type",
+                "Esta es la descripscion"
+            )
+        ) {
         }
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun CenterCardPreview() {
+    GestionIFEMATheme {
+        CenterCard(
+            center = Center(
+                1,
+                "Centro de Prueba",
+                "www",
+                "Type",
+                "Esta es la descripscion"
+            )
+        )
+    }
+}

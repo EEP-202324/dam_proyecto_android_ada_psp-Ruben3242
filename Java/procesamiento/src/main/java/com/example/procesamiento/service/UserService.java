@@ -92,7 +92,7 @@ public class UserService {
 			existingUser.setCentroVisita(user.getCentroVisita());
 			existingUser.setEdad(user.getEdad());
 			existingUser.setEmail(user.getEmail());
-			existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+			existingUser.setPassword(/*passwordEncoder.encode*/(user.getPassword()));
 			existingUser.setRol(user.getRol());
 			return userRepository.save(existingUser);
 		} else {

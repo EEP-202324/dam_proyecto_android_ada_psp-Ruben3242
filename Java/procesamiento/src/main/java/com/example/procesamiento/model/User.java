@@ -45,6 +45,14 @@ public class User {
 		this.edad = edad;
 	}
 
+	public User(String nombre, String centroVisita, int edad, String email,  String rol) {
+		this.nombre = nombre;
+		this.centroVisita = centroVisita;
+		this.email = email;
+		this.rol = rol;
+		this.edad = edad;
+	}
+
 	public int getId() {
 		return id;
 	}
