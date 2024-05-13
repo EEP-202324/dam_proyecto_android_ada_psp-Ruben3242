@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 //@RequestMapping("/api/v1")
 public class CenterController {
+	@Autowired
     private final CenterService centerService;
 
     @Autowired

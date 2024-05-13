@@ -12,14 +12,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "center")
+@Table(name = "centers")
 public class Center {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private String nombreCentro;
-	private int stand;
-	private String paginaWeb;
+	private String name;
+	private String address;
+	private String phone;
+	private String descr;
+	private String web;
 	private String type;
 	@OneToMany(mappedBy = "center", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<User> users = new HashSet<>();
@@ -27,27 +29,14 @@ public class Center {
 	public Center() {
 	}
 
-	public Center(int id, String nombreCentro, int stand, String paginaWeb, String type) {
+	public Center(int id, String name,  String web, String type, String address, String phone, String descr) {
 		this.id = id;
-		this.nombreCentro = nombreCentro;
-		this.stand = stand;
-		this.paginaWeb = paginaWeb;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
+		this.name = name;
+		this.web = web;
 		this.type = type;
-	}
-
-	public String getPaginaWeb() {
-		return paginaWeb;
-	}
-
-	public void setPaginaWeb(String paginaWeb) {
-		this.paginaWeb = paginaWeb;
+		this.address = address;
+		this.phone = phone;
+		this.descr = descr;
 	}
 
 	public int getId() {
@@ -58,19 +47,59 @@ public class Center {
 		this.id = id;
 	}
 
-	public String getNombreCentro() {
-		return nombreCentro;
+	public String getName() {
+		return name;
 	}
 
-	public void setNombreCentro(String nombreCentro) {
-		this.nombreCentro = nombreCentro;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public int getStand() {
-		return stand;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setStand(int stand) {
-		this.stand = stand;
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getDescr() {
+		return descr;
+	}
+
+	public void setDescr(String descr) {
+		this.descr = descr;
+	}
+
+	public String getWeb() {
+		return web;
+	}
+
+	public void setWeb(String web) {
+		this.web = web;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
 	}
 }

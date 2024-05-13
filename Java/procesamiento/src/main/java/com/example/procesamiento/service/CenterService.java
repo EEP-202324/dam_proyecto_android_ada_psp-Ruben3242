@@ -18,12 +18,12 @@ public class CenterService {
     }
     
     public List<Center> searchCentersByName(String nombre) {
-        return centerRepository.findByNombreCentroContainingIgnoreCase(nombre);
+        return centerRepository.findByNameContainingIgnoreCase(nombre);
     }
     
     public List<Center> searchCentersByType(String type) {
     	
-        return centerRepository.findByNombreCentroStartingWithIgnoreCase(type);
+        return centerRepository.findByNameStartingWithIgnoreCase(type);
     }
     
     public List<Center> getAllCentersSorted(boolean ascending) {
@@ -37,16 +37,19 @@ public class CenterService {
     public Center saveCenter(Center center) {
         return centerRepository.save(center);
     }
-    public void deleteCenter(Integer name) {
-        centerRepository.deleteById(name);
+    public void deleteCenter(Integer id) {
+        centerRepository.deleteById(id);
     }
 
 	public Center updateCenter(Integer id, Center center) {
 		Center centerToUpdate = centerRepository.findById(id).orElse(null);
         if (centerToUpdate != null) {
-            centerToUpdate.setNombreCentro(center.getNombreCentro());
-            centerToUpdate.setPaginaWeb(center.getPaginaWeb());
-            centerToUpdate.setStand(center.getStand());
+            centerToUpdate.setName(center.getName());
+            centerToUpdate.setWeb(center.getWeb());
+            centerToUpdate.setType(center.getType());
+            centerToUpdate.setAddress(center.getAddress());
+            centerToUpdate.setPhone(center.getPhone());
+            centerToUpdate.setDescr(center.getDescr());
             return centerRepository.save(centerToUpdate);
         }
         return null;

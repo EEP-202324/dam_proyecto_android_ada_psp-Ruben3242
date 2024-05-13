@@ -10,7 +10,7 @@ import com.example.procesamiento.model.Center;
 @Repository
 public interface CenterRepository extends JpaRepository<Center, Integer>, PagingAndSortingRepository<Center, Integer> {
 	
-	List<Center> findByNombreCentroContainingIgnoreCase(String nombreCentro);
+	List<Center> findByNameContainingIgnoreCase(String name); // Cambiado de 'findByNombreCentroContainingIgnoreCase'
 
-	List<Center> findByNombreCentroStartingWithIgnoreCase(String tipo);
+    List<Center> findByNameStartingWithIgnoreCase(String type); 
 }
