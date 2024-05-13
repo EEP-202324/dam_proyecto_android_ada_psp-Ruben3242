@@ -23,35 +23,6 @@ import retrofit2.http.Query
 import java.lang.reflect.Type
 
 
-interface ApiService {
-
-    @GET
-    fun getUsers(): Response<List<User>>
-
-    @GET("user/{id}")
-    suspend fun getUserById(@Path("id") id: Int): Response<User>//FUNCIONA
-
-    @PUT("user/{id}")
-    suspend fun updateUserById(@Path("id") id: Int, @Body user: User): Response<User>
-
-    @DELETE("user/{id}")
-    fun deleteUserById(@Query("id") id: Int): Response<User>
-
-    @POST("user")
-    fun createUser(@Body user: User): Response<User>
-
-    @POST("login")
-    suspend fun loginUser(@Body request: LoginRequest): Response<User>
-//////////////////////////////////////////////////////////////////////
-    @GET("centers")
-    suspend fun getCenters(): Response<List<Center>>
-
-    @GET("centers/{id}")
-    fun getCenterById(@Path("id") id: Int): Response<Center>
-
-
-
-}
 private const val BASE_URL =
     "http://10.0.2.2:8080/"
 
@@ -70,13 +41,8 @@ val gson = GsonBuilder()
     })
     .create()
 
-private val retrofit = Retrofit.Builder()
+val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create(gson))
     .baseUrl(BASE_URL)
     .build()
 
-object ApiClient {
-    val retrofitService: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
-    }
-}

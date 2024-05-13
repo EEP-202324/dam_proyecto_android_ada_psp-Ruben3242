@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.eep.android.gestionifema.api.ApiClient
-import com.eep.android.gestionifema.api.ApiService
+
+import com.eep.android.gestionifema.api.ApiClientLogin
+
 import com.eep.android.gestionifema.model.LoginRequest
 import com.eep.android.gestionifema.model.User
 import com.eep.android.gestionifema.ui.Screen
@@ -24,7 +25,7 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = LoginRequest(email, password, role)
-                val response = ApiClient.retrofitService.loginUser(request)
+                val response = ApiClientLogin.retrofitService.loginUser(request)
                 if (response.isSuccessful) {
                     onSuccess(response.body())
                 } else {

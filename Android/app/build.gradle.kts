@@ -70,6 +70,7 @@ dependencies {
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
 //    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+    implementation(libs.play.services.gcm)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

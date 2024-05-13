@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.eep.android.gestionifema.api.ApiClient
+import com.eep.android.gestionifema.api.ApiClientUsers
 import com.eep.android.gestionifema.model.Center
 import com.eep.android.gestionifema.model.User
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
@@ -157,7 +157,7 @@ fun CenterCard(center: Center) {
 
 
 suspend fun obtenerUsuario(userId: Int) {
-    var response = ApiClient.retrofitService.getUserById(userId)
+    var response = ApiClientUsers.retrofitService.getUserById(userId)
     if (response.isSuccessful) {
         userUpda = response.body()!!
         Log.d("UserScreen", "Usuario obtenido: $userUpda")
@@ -275,7 +275,10 @@ fun centros() {
                 "Centro de Prueba",
                 "www",
                 "Type",
-                "Esta es la descripscion"
+                "Esta es la descripscion",
+                "Direccion",
+                "Telefono",
+
             )
         ) {
         }
@@ -292,7 +295,9 @@ fun CenterCardPreview() {
                 "Centro de Prueba",
                 "www",
                 "Type",
-                "Esta es la descripscion"
+                "Esta es la descripscion",
+                "Direccion",
+                "Telefono",
             )
         )
     }
