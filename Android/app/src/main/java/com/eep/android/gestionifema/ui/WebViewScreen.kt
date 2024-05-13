@@ -1,6 +1,9 @@
 package com.eep.android.gestionifema.ui
 
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -21,3 +24,5 @@ fun AppNavHost(navController: NavHostController) {
         }
     }
 }
+
+
