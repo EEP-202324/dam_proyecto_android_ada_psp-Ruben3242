@@ -5,17 +5,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.eep.android.gestionifema.ui.centerDetail
+
 
 import com.eep.android.gestionifema.ui.LoginScreen
 import com.eep.android.gestionifema.ui.OwnerScreen
 import com.eep.android.gestionifema.ui.Screen
 import com.eep.android.gestionifema.ui.UserScreen
+import com.eep.android.gestionifema.ui.WebViewScreen
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 
 
@@ -24,7 +26,11 @@ fun IfemaApp() {
     val navController = rememberNavController()
     GestionIFEMATheme {
         Scaffold { innerPadding ->
-            NavHost(navController = navController, startDestination = Screen.Login, modifier = Modifier.padding(innerPadding)) {
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Owner,
+                modifier = Modifier.padding(innerPadding)
+            ) {
                 composable(Screen.Login) {
                     LoginScreen(navController)
                 }
@@ -35,20 +41,18 @@ fun IfemaApp() {
                     UserScreen(navController, backStackEntry.arguments?.getInt("userId") ?: 0)
                 }
                 composable(Screen.Owner) {
-                    OwnerScreen(navController)
+                    OwnerScreen(navController, viewModel())
                 }
                 composable(
-                    route = "centerDetail/{centerId}",
-                    arguments = listOf(navArgument("centerId") { type = NavType.IntType })
+                    "webview/{url}",
+                    arguments = listOf(navArgument("url") { type = NavType.StringType })
                 ) { backStackEntry ->
-                    val centerId = backStackEntry.arguments?.getInt("centerId") ?: 0
-                    centerDetail(navController, centerId)
+                    WebViewScreen(url = backStackEntry.arguments?.getString("url") ?: "")
                 }
             }
         }
     }
 }
-
 
 
 @Preview(showBackground = true)
