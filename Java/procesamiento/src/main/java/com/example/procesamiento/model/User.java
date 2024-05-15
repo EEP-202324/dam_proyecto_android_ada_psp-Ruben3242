@@ -1,12 +1,16 @@
 package com.example.procesamiento.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,11 +26,22 @@ public class User {
     private String email;
     private String password;
 	private String rol;
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "center_id")
-    private Center center;
+	@ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_center",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "center_id")
+    )
+	private Set<Center> centers = new HashSet<>();
 	
-	
+	public Set<Center> getCenters() {
+		return centers;
+	}
+
+	public void setCenters(Set<Center> centers) {
+		this.centers = centers;
+	}
+
 	public User() {
 	}
 

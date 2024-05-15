@@ -3,12 +3,14 @@ package com.example.procesamiento.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,7 +25,8 @@ public class Center {
 	private String descr;
 	private String web;
 	private String type;
-	@OneToMany(mappedBy = "center", cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToMany(mappedBy = "centers", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Set<User> users = new HashSet<>();
 
 	public Center() {
@@ -102,4 +105,6 @@ public class Center {
 	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
+
+	
 }
