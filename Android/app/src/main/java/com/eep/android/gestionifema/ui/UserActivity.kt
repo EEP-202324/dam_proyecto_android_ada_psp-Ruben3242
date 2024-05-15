@@ -3,6 +3,7 @@ package com.eep.android.gestionifema.ui
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,6 +57,7 @@ fun UserScreen(navController: NavHostController, userId: Int) {
     }
     Column(modifier = Modifier.padding(16.dp)) {
         // Formulario para introducir nombre y edad
+        Text(text = "Editar usuario", style = MaterialTheme.typography.titleLarge)
         OutlinedTextField(
             value = nombre,
             onValueChange = { nombre = it },
@@ -71,11 +73,18 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Text(text = "Centro de visita:", style = MaterialTheme.typography.headlineSmall)
+        TextButton(
+            onClick = { showSelectedCenters = !showSelectedCenters }
+        ) {
+            Text("Centro de visita: ${if (showSelectedCenters) "Ocultar" else "Mostrar"} centros seleccionados")
+        }
+
+        // Mostrar los centros seleccionados si showSelectedCenters es verdadero
+        if (showSelectedCenters) {
             selectedCenters.forEach { center ->
                 CenterCard(center, navController)
             }
-
+        }
         Row {
             Button(
                 onClick = {
@@ -127,19 +136,20 @@ fun UserScreen(navController: NavHostController, userId: Int) {
         Text("Centros:", style = MaterialTheme.typography.headlineSmall)
         LazyColumn {
             items(centers) { center ->
-                CenterListItem(center, onClick = {
-                    if (!selectedCenters.contains(center)) {
-                        selectedCenters.add(center)
-                    }
-                })
+                CenterListItem(
+                    center = center,
+                    onClick = {
+                        if (selectedCenters.contains(center)) {
+                            selectedCenters.remove(center)
+                        } else {
+                            selectedCenters.add(center)
+                        }
+
+                    },
+
+                )
             }
         }
-
-
-        // Botón para obtener más información del centro seleccionado
-
-
-        // Botón para cerrar sesión y volver al login
 
     }
 }
@@ -186,52 +196,42 @@ suspend fun obtenerUsuario(userId: Int) {
     }
 
 }
-// fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
-//     val response = ApiClient.retrofitService.updateUserById(userId, User(id = userId, nombre = nombre, email = "", password = "", rol = "", centroVisita = selectedCenter?.nombreCentro ?: "", edad = edad.toIntOrNull() ?: 0))
-//        if (response.isCanceled) {
-//            Log.d("UserScreen", "Usuario actualizado correctamente")
-//        } else {
-//            Log.e("UserScreen", "Error al actualizar el usuario: ${response.isCanceled?.equals(false)}")
-//        }
 
-// }
 
-//fun addUser(userId: Int, nombre: String, edad: String, selectedCenter: Center?) {
-//    val updatedUser = User(
-//        id = userId,
-//        nombre = nombre,
-//        email = Usuario.email,  // Debes manejar este valor de acuerdo a tus necesidades
-//        password = Usuario.password,  // Idealmente no deberías manejar contraseñas así
-//        rol = Usuario.rol,  // Actualiza según corresponda
-//        centroVisita = selectedCenter?.nombreCentro ?: "",
-//        edad = edad.toIntOrNull() ?: 0
-//    )
-//
-//    ApiClient.retrofitService.updateUserById(userId, updatedUser).enqueue(object : Callback<User> {
-//        override fun onResponse(call: Call<User>, response: Response<User>) {
-//            if (response.isSuccessful) {
-//                Log.d("UserScreen", "Usuario actualizado correctamente")
-//            } else {
-//                Log.e("UserScreen", "Error al actualizar el usuario: ${response.errorBody()?.string()}")
-//            }
-//        }
-//
-//        override fun onFailure(call: Call<User>, t: Throwable) {
-//            Log.e("UserScreen", "Error al actualizar el usuario", t)
-//        }
-//    })
-//
-//}
+@Composable
+fun ShowDetailsCenter(center: Center, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Detalles del Centro") },
+        text = {
+            Column {
+                Text("Nombre: ${center.name}")
+                Text("Dirección: ${center.address}")
+                Text("Telefono: ${center.phone}")
+                Text("Descripcion: ${center.descr}")
 
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
 @Composable
 fun CenterListItem(
     center: Center,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+
 ) {
+    var showDetailsDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { showDetailsDialog = true },
+
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -241,12 +241,17 @@ fun CenterListItem(
         ) {
             Icon(
                 imageVector = Icons.Default.School,
-                contentDescription = null,  // Considera agregar una descripción adecuada
+                contentDescription = "Centro",
                 modifier = Modifier.size(40.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(center.name, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    center.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.width(250.dp),
+                )
+
                 Text(center.web, style = MaterialTheme.typography.bodySmall)
 
             }
@@ -256,6 +261,24 @@ fun CenterListItem(
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Añadir")
             }
+        }
+        if (showDetailsDialog) {
+            AlertDialog(
+                onDismissRequest = { showDetailsDialog = false },
+                title = { Text("Detalles del Centro") },
+                text = {
+                    Column {
+                        Text("Nombre: ${center.name}")
+                        Text("Dirección: ${center.address}")
+                        Text("Web: ${center.web}")
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = { showDetailsDialog = false }) {
+                        Text("Cerrar")
+                    }
+                }
+            )
         }
     }
 }
@@ -293,6 +316,28 @@ fun centros() {
             center = Center(
                 1,
                 "Centro de Prueba",
+                "www",
+                "Type",
+                "Esta es la descripscion",
+                "Telefono",
+                "Direccion",
+
+
+            ),
+
+        ) {
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun descripcion() {
+    GestionIFEMATheme {
+        ShowDetailsCenter(
+            center = Center(
+                1,
+                "Centro de Prueba pero si es mas largo que pasa",
                 "www",
                 "Type",
                 "Esta es la descripscion",
