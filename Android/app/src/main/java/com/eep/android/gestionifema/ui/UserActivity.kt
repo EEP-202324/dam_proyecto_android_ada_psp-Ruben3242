@@ -1,5 +1,6 @@
 package com.eep.android.gestionifema.ui
 
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -71,7 +73,7 @@ fun UserScreen(navController: NavHostController, userId: Int) {
         )
         Text(text = "Centro de visita:", style = MaterialTheme.typography.headlineSmall)
             selectedCenters.forEach { center ->
-                CenterCard(center)
+                CenterCard(center, navController)
             }
 
         Row {
@@ -142,8 +144,9 @@ fun UserScreen(navController: NavHostController, userId: Int) {
     }
 }
 
+
 @Composable
-fun CenterCard(center: Center) {
+fun CenterCard(center: Center, navController: NavHostController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,14 +154,26 @@ fun CenterCard(center: Center) {
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(center.name, style = MaterialTheme.typography.titleMedium)
-            Text(center.web, style = MaterialTheme.typography.bodySmall)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(center.name, style = MaterialTheme.typography.titleMedium)
+                Text(center.web, style = MaterialTheme.typography.bodySmall)
+            }
+            IconButton(onClick = {
+                val encodedUrl = Uri.encode(center.web ?: "")
+                navController.navigate("webview/$encodedUrl")
+            }) {
+                Icon(Icons.Filled.Public, contentDescription = "Abrir página web")
+            }
         }
     }
 }
+
 
 
 suspend fun obtenerUsuario(userId: Int) {
@@ -303,7 +318,8 @@ fun CenterCardPreview() {
                 "Esta es la descripscion",
                 "Direccion",
                 "Telefono",
-            )
+            ),
+            navController = rememberNavController()
         )
     }
 }
