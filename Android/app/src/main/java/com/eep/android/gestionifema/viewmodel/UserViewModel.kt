@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eep.android.gestionifema.api.ApiClientCenters
+import com.eep.android.gestionifema.api.ApiClientJoin
 
 import com.eep.android.gestionifema.api.ApiClientUsers
 import com.eep.android.gestionifema.model.Center
@@ -63,6 +64,22 @@ class UserViewModel : ViewModel() {
                     onSuccess()
                 } else {
                     onError("Error al actualizar el usuario: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                onError("Error de red: ${e.localizedMessage}")
+                Log.e("UserViewModel", "Network error", e)
+            }
+        }
+    }
+
+    fun addUserCenter(userId: Int, centerId: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = ApiClientJoin.retrofitService.addUserCenter(userId, centerId)
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError("Error al añadir el centro al usuario: ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
                 onError("Error de red: ${e.localizedMessage}")

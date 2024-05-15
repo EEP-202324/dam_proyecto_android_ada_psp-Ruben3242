@@ -27,7 +27,7 @@ import com.eep.android.gestionifema.model.User
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 import com.eep.android.gestionifema.viewmodel.UserViewModel
 
-var userUpda = User(0, "", "", "", 0, "", "")
+var userUpda = User(0,"",0,"","","","")
 
 @Composable
 fun UserScreen(navController: NavHostController, userId: Int) {
@@ -78,13 +78,13 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             Button(
                 onClick = {
                     val updatedUser = userUpda.copy(
-                        nombre = nombre,
-                        edad = edad.toIntOrNull() ?: 0,
-                        centroVisita = selectedCenters.joinToString { it.name },
-                        email = user?.email ?: "",  // Mantén el email existente
-                        // Mantén la contraseña existente
-                        rol = user?.rol ?: ""  // Mantén el rol existente
-                    )
+                    nombre = nombre,
+                    edad = edad.toIntOrNull() ?: 0,
+                    centroVisita = selectedCenters.joinToString { it.name },
+                    email = user?.email ?: "",  // Mantén el email existente
+                    // Mantén la contraseña existente
+                    rol = user?.rol ?: ""  // Mantén el rol existente
+                )
                     viewModel.updateUser(userId, updatedUser, onSuccess = {
                         Toast.makeText(
                             context,
@@ -94,6 +94,17 @@ fun UserScreen(navController: NavHostController, userId: Int) {
                     }, onError = { error ->
                         Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                     })
+                    selectedCenters.forEach { center ->
+                        viewModel.addUserCenter(userId, center.id, onSuccess = {
+                            Toast.makeText(
+                                context,
+                                "Centro añadido correctamente",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }, onError = { error ->
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                        })
+                    }
                 },
 
                 modifier = Modifier.weight(1f)

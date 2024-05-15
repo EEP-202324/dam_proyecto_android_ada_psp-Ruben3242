@@ -1,6 +1,7 @@
 package com.eep.android.gestionifema.api
 
 import com.eep.android.gestionifema.api.Service.ApiServiceCenters
+import com.eep.android.gestionifema.api.Service.ApiServiceJoin
 import com.eep.android.gestionifema.api.Service.ApiServiceLogin
 import com.eep.android.gestionifema.api.Service.ApiServiceUser
 
@@ -19,5 +20,11 @@ object ApiClientUsers {
 object ApiClientLogin {
     val retrofitService: ApiServiceLogin by lazy {
         retrofit.create(ApiServiceLogin::class.java)
+    }
+}
+
+object ApiClientJoin {
+    val retrofitService: ApiServiceJoin by lazy {
+        retrofit.create(ApiServiceJoin::class.java)
     }
 }
