@@ -2,6 +2,8 @@ package com.eep.android.gestionifema.ui
 
 import android.net.Uri
 import android.util.Log
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -30,7 +33,7 @@ import com.eep.android.gestionifema.model.User
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 import com.eep.android.gestionifema.viewmodel.UserViewModel
 
-var userUpda = User(0,"",0,"","","","")
+var userUpda = User(0, "", 0, "", "", "", "")
 
 @Composable
 fun UserScreen(navController: NavHostController, userId: Int) {
@@ -40,13 +43,10 @@ fun UserScreen(navController: NavHostController, userId: Int) {
     val context = LocalContext.current
     val selectedCenters = remember { mutableStateListOf<Center>() }
 
-//    var selectedCenter by remember { mutableStateOf<Center?>(null) }
     var showSelectedCenters by remember { mutableStateOf(false) }
-
-
-    var nombre by remember { mutableStateOf(userUpda.nombre) }
-    var edad by remember { mutableStateOf(userUpda.edad.toString()) }
-
+    var nombre by remember { mutableStateOf("") }
+    var edad by remember { mutableStateOf("") }
+    var sortAscending by remember { mutableStateOf(true) }  // Verdadero para A-Z, falso para Z-A
 
 
 
@@ -89,13 +89,13 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             Button(
                 onClick = {
                     val updatedUser = userUpda.copy(
-                    nombre = nombre,
-                    edad = edad.toIntOrNull() ?: 0,
-                    centroVisita = selectedCenters.joinToString { it.name },
-                    email = user?.email ?: "",  // Mantén el email existente
-                    // Mantén la contraseña existente
-                    rol = user?.rol ?: ""  // Mantén el rol existente
-                )
+                        nombre = nombre,
+                        edad = edad.toIntOrNull() ?: 0,
+                        centroVisita = selectedCenters.joinToString { it.name },
+                        email = user?.email ?: "",  // Mantén el email existente
+                        // Mantén la contraseña existente
+                        rol = user?.rol ?: ""  // Mantén el rol existente
+                    )
                     viewModel.updateUser(userId, updatedUser, onSuccess = {
                         Toast.makeText(
                             context,
@@ -132,10 +132,34 @@ fun UserScreen(navController: NavHostController, userId: Int) {
                 Text("Cerrar sesión")
             }
         }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
 
-        Text("Centros:", style = MaterialTheme.typography.headlineSmall)
+        ) {
+            Text(
+                "Centros:", style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+            Button(
+                onClick = { sortAscending = !sortAscending },
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+
+            ) {
+                Text(if (sortAscending) "Priorizar UNI" else "Priorizar FP")
+            }
+        }
+        val sortedCenters = if (sortAscending) {
+            centers.sortedBy { it.type }
+        } else {
+            centers.sortedByDescending { it.type }
+        }
+
         LazyColumn {
-            items(centers) { center ->
+
+            items(sortedCenters) { center ->
                 CenterListItem(
                     center = center,
                     onClick = {
@@ -147,7 +171,7 @@ fun UserScreen(navController: NavHostController, userId: Int) {
 
                     },
 
-                )
+                    )
             }
         }
 
@@ -185,7 +209,6 @@ fun CenterCard(center: Center, navController: NavHostController) {
 }
 
 
-
 suspend fun obtenerUsuario(userId: Int) {
     var response = ApiClientUsers.retrofitService.getUserById(userId)
     if (response.isSuccessful) {
@@ -219,12 +242,40 @@ fun ShowDetailsCenter(center: Center, onDismiss: () -> Unit) {
         }
     )
 }
+
+@Composable
+fun WebViewSample(
+    url: String,
+    webViewClient: WebViewClient = WebViewClient()
+) {
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                this.webViewClient = webViewClient
+            }
+        },
+        update = { webView ->
+            webView.loadUrl(url)
+        }
+    )
+}
+
+class CustomWebViewClient : WebViewClient() {
+    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+        if (url != null && url.startsWith("https://example.com")) {
+            view?.loadUrl(url)
+            return true
+        }
+        return false
+    }
+}
+
 @Composable
 fun CenterListItem(
     center: Center,
     onClick: () -> Unit,
 
-) {
+    ) {
     var showDetailsDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -323,9 +374,9 @@ fun centros() {
                 "Direccion",
 
 
-            ),
+                ),
 
-        ) {
+            ) {
         }
     }
 }
@@ -344,7 +395,7 @@ fun descripcion() {
                 "Direccion",
                 "Telefono",
 
-            )
+                )
         ) {
         }
     }

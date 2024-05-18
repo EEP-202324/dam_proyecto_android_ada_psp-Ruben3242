@@ -45,6 +45,11 @@ fun OwnerScreen(navController: NavController, viewModel: OwnerViewModel = viewMo
             TopAppBar(
                 title = { Text("Centros") },
                 actions = {
+                    Button(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Salir")
+                        Text("Salir")
+                        
+                    }
                     IconButton(onClick = { viewModel.getCenters() }) {
                         Icon(Icons.Filled.Refresh, contentDescription = "Actualizar")
                     }
@@ -77,11 +82,8 @@ fun CenterCard(center: Center, viewModel: OwnerViewModel, navController: NavCont
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            Text(text = center.name ?: "Nombre no disponible", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Dirección: ${center.address ?: "Dirección no disponible"}", style = MaterialTheme.typography.bodySmall)
-//            Text(text = "Página Web: ${center.web ?: "Página web no disponible"}", style = MaterialTheme.typography.bodySmall)
-//            Text(text = "Teléfono: ${center.phone ?: "Teléfono no disponible"}", style = MaterialTheme.typography.bodySmall)
-//            Text(text = "Descripción: ${center.descr ?: "Descripción no disponible"}", style = MaterialTheme.typography.bodySmall)
+            Text(text = center.name, style = MaterialTheme.typography.titleMedium)
+            Text(text = "Dirección: ${center.address}", style = MaterialTheme.typography.bodySmall)
             Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = { showDetailsDialog = true }) {
                     Icon(Icons.Filled.Info, contentDescription = "Ver detalles")
@@ -91,12 +93,6 @@ fun CenterCard(center: Center, viewModel: OwnerViewModel, navController: NavCont
                 }
                 IconButton(onClick = { showDialogDelete = true }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Eliminar")
-                }
-                IconButton(onClick = {
-                    val encodedUrl = Uri.encode(center.web ?: "")
-                    navController.navigate("webview/$encodedUrl")
-                }) {
-                    Icon(Icons.Filled.Public, contentDescription = "Abrir página web")
                 }
             }
         }
@@ -134,38 +130,14 @@ fun ShowDetailsDialog(center: Center, onDismiss: () -> Unit) {
     )
 }
 @Composable
-fun WebViewSample(
-    url: String,
-    webViewClient: WebViewClient = WebViewClient()
-) {
-    AndroidView(
-        factory = { context ->
-            WebView(context).apply {
-                this.webViewClient = webViewClient
-            }
-        },
-        update = { webView ->
-            webView.loadUrl(url)
-        }
-    )
-}
-class CustomWebViewClient : WebViewClient() {
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        if (url != null && url.startsWith("https://example.com")) {
-            view?.loadUrl(url)
-            return true
-        }
-        return false
-    }
-}
-@Composable
 fun ShowEditDialog(center: Center, viewModel: OwnerViewModel, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    var nombre by remember { mutableStateOf(center.name) }
-    var direccion by remember { mutableStateOf(center.address) }
-    var paginaWeb by remember { mutableStateOf(center.web) }
-    var telefono by remember { mutableStateOf(center.phone) }
-    var descripcion by remember { mutableStateOf(center.descr) }
+    // Asegúrate de que los valores iniciales nunca sean nulos usando el operador Elvis `?:` con valores predeterminados.
+    var nombre by remember { mutableStateOf(center.name ?: "") }
+    var direccion by remember { mutableStateOf(center.address ?: "") }
+    var paginaWeb by remember { mutableStateOf(center.web ?: "") }
+    var telefono by remember { mutableStateOf(center.phone ?: "") }
+    var descripcion by remember { mutableStateOf(center.descr ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -213,7 +185,7 @@ fun ShowDeleteDialog(center: Center, viewModel: OwnerViewModel, navController: N
             TextButton(onClick = {
                 viewModel.deleteCenter(center.id, onSuccess = {
                     Toast.makeText(context, "Centro eliminado", Toast.LENGTH_SHORT).show()  // Usa el contexto obtenido
-                    navController.popBackStack()
+//                    navController.popBackStack()
                 }, onError = {
                     Toast.makeText(context, "Error al eliminar el centro", Toast.LENGTH_SHORT).show()  // Usa el contexto obtenido
                 })
@@ -270,10 +242,3 @@ fun PreviewShowDetailsDialog() {
     ShowDetailsDialog(center) {}
 }
 
-//@Preview
-//@Composable
-//fun PreviewAddCenterScreen() {
-//    val navController = rememberNavController()
-//    val viewModel = viewModel<OwnerViewModel>()
-//    AddCenterScreen(navController, viewModel)
-//}

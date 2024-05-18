@@ -32,7 +32,7 @@ public class Center {
 	public Center() {
 	}
 
-	public Center(int id, String name,  String web, String type, String address, String phone, String descr) {
+	public Center(int id, String name, String web, String type, String address, String phone, String descr) {
 		this.id = id;
 		this.name = name;
 		this.web = web;
@@ -106,5 +106,4 @@ public class Center {
 		this.users = users;
 	}
 
-	
 }

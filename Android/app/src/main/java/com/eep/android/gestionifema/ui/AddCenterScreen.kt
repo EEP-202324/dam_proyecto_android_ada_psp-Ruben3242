@@ -1,6 +1,7 @@
 package com.eep.android.gestionifema.ui
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -87,18 +88,45 @@ fun AddCenterScreen(navController: NavController, viewModel: OwnerViewModel) {
             }
         }
 
-        Button(
-            onClick = {
-                viewModel.createCenter(Center(0, nombre, paginaWeb, selectedTipo, direccion, telefono, descripcion), {
-                    Toast.makeText(context, "Centro agregado correctamente", Toast.LENGTH_SHORT).show()
-                    navController.popBackStack()  // Regresa a la pantalla anterior tras agregar
-                }, {
-                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                })
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+
         ) {
-            Text("Agregar Centro")
+            Button(
+                onClick = {
+                    navController.popBackStack()
+                },
+
+            ) {
+                Text("Cancelar")
+            }
+            Button(
+                onClick = {
+                    viewModel.createCenter(
+                        Center(
+                            0,
+                            nombre,
+                            paginaWeb,
+                            selectedTipo,
+                            direccion,
+                            telefono,
+                            descripcion
+                        ), {
+                            Toast.makeText(
+                                context,
+                                "Centro agregado correctamente",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController.navigate("owner")
+                        }, {
+                            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                        })
+                },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text("Agregar Centro")
+            }
         }
     }
 }

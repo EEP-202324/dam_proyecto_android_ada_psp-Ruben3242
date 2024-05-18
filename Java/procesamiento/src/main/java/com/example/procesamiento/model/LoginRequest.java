@@ -1,10 +1,9 @@
 package com.example.procesamiento.model;
 
 public class LoginRequest {
-    private String email;
-    private String password;
-    private String role;
-
+	private String email;
+	private String password;
+	private String role;
 
 	public String getRole() {
 		return role;

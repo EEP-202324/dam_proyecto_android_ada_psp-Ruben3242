@@ -23,17 +23,13 @@ public class User {
 	private String nombre;
 	private String centroVisita;
 	private int edad;
-    private String email;
-    private String password;
+	private String email;
+	private String password;
 	private String rol;
 	@ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_center",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "center_id")
-    )
+	@JoinTable(name = "user_center", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "center_id"))
 	private Set<Center> centers = new HashSet<>();
-	
+
 	public Set<Center> getCenters() {
 		return centers;
 	}
@@ -60,7 +56,7 @@ public class User {
 		this.edad = edad;
 	}
 
-	public User(String nombre, String centroVisita, int edad, String email,  String rol) {
+	public User(String nombre, String centroVisita, int edad, String email, String rol) {
 		this.nombre = nombre;
 		this.centroVisita = centroVisita;
 		this.email = email;
