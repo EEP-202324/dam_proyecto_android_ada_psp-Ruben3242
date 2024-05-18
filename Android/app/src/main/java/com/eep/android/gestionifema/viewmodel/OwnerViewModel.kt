@@ -26,7 +26,10 @@ class OwnerViewModel : ViewModel() {
                     _centers.value = response.body() ?: emptyList()
                     Log.d("OwnerViewModel", "Centers fetched: ${_centers.value}")
                 } else {
-                    Log.e("OwnerViewModel", "Error fetching centers: ${response.errorBody()?.string()}")
+                    Log.e(
+                        "OwnerViewModel",
+                        "Error fetching centers: ${response.errorBody()?.string()}"
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("OwnerViewModel", "Network error", e)
@@ -44,7 +47,10 @@ class OwnerViewModel : ViewModel() {
                     Log.d("OwnerViewModel", "Center fetched: ${_center.value}")
                 } else {
                     onError(response.errorBody()?.string() ?: "Unknown error")
-                    Log.e("OwnerViewModel", "Error fetching center: ${response.errorBody()?.string()}")
+                    Log.e(
+                        "OwnerViewModel",
+                        "Error fetching center: ${response.errorBody()?.string()}"
+                    )
                 }
             } catch (e: Exception) {
                 onError(e.message ?: "Unknown error")
@@ -53,10 +59,16 @@ class OwnerViewModel : ViewModel() {
         }
     }
 
-    fun updateCenter(centerId: Int, updatedCenter: Center, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateCenter(
+        centerId: Int,
+        updatedCenter: Center,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val response = ApiClientCenters.retrofitService.updateCenterById(centerId, updatedCenter)
+                val response =
+                    ApiClientCenters.retrofitService.updateCenterById(centerId, updatedCenter)
                 if (response.isSuccessful) {
                     getCenters()
                     onSuccess()

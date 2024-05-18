@@ -1,4 +1,4 @@
-package com.eep.android.gestionifema.ui
+package com.eep.android.gestionifema.ui.screen
 
 import android.net.Uri
 import android.util.Log
@@ -125,7 +125,7 @@ fun UserScreen(navController: NavHostController, userId: Int) {
             Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = {
-                    navController.navigate(Screen.Login)
+                    navController.navigate("login")
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -335,22 +335,6 @@ fun CenterListItem(
 }
 
 
-//fun obtenerCentros() {
-//    ApiClient.retrofitService.getCenters().enqueue(object : Callback<List<Center>> {
-//        override fun onResponse(call: Call<List<Center>>, response: Response<List<Center>>) {
-//            if (response.isSuccessful) {
-//                listaCentros = response.body() as MutableList<Center>
-//                Log.d("UserScreen", "Centros obtenidos: $listaCentros")
-//            }
-//        }
-//
-//        override fun onFailure(call: Call<List<Center>>, t: Throwable) {
-//            Log.e("UserScreen", "Error al obtener los centros", t)
-//        }
-//    })
-//}
-
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewUserScreen() {
@@ -372,8 +356,6 @@ fun centros() {
                 "Esta es la descripscion",
                 "Telefono",
                 "Direccion",
-
-
                 ),
 
             ) {

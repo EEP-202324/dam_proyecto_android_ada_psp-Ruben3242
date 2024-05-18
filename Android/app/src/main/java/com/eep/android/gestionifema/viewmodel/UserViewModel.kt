@@ -15,45 +15,53 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
-        private val _user = MutableStateFlow<User?>(null)
-        val user: StateFlow<User?> = _user.asStateFlow()
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user.asStateFlow()
 
-        private val _centers = MutableStateFlow<List<Center>>(emptyList())
-        val centers: StateFlow<List<Center>> = _centers.asStateFlow()
+    private val _centers = MutableStateFlow<List<Center>>(emptyList())
+    val centers: StateFlow<List<Center>> = _centers.asStateFlow()
 
-        fun getUserById(userId: Int) {
-            viewModelScope.launch {
-                try {
-                    val response = ApiClientUsers.retrofitService.getUserById(userId)
-                    if (response.isSuccessful) {
-                        _user.value = response.body()
-                        Log.d("UserViewModel", "User fetched: ${_user.value}")
-                    } else {
-                        Log.e("UserViewModel", "Error fetching user: ${response.errorBody()?.string()}")
-                    }
-                } catch (e: Exception) {
-                    Log.e("UserViewModel", "Network error", e)
+    fun getUserById(userId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = ApiClientUsers.retrofitService.getUserById(userId)
+                if (response.isSuccessful) {
+                    _user.value = response.body()
+                    Log.d("UserViewModel", "User fetched: ${_user.value}")
+                } else {
+                    Log.e("UserViewModel", "Error fetching user: ${response.errorBody()?.string()}")
                 }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Network error", e)
             }
         }
+    }
 
-        fun getCenters() {
-            viewModelScope.launch {
-                try {
-                    val response = ApiClientCenters.retrofitService.getCenters()
-                    if (response.isSuccessful) {
-                        _centers.value = response.body() ?: emptyList()
-                        Log.d("UserViewModel", "Centers fetched: ${_centers.value}")
-                    } else {
-                        Log.e("UserViewModel", "Error fetching centers: ${response.errorBody()?.string()}")
-                    }
-                } catch (e: Exception) {
-                    Log.e("UserViewModel", "Network error", e)
+    fun getCenters() {
+        viewModelScope.launch {
+            try {
+                val response = ApiClientCenters.retrofitService.getCenters()
+                if (response.isSuccessful) {
+                    _centers.value = response.body() ?: emptyList()
+                    Log.d("UserViewModel", "Centers fetched: ${_centers.value}")
+                } else {
+                    Log.e(
+                        "UserViewModel",
+                        "Error fetching centers: ${response.errorBody()?.string()}"
+                    )
                 }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Network error", e)
             }
         }
+    }
 
-    fun updateUser(userId: Int, updatedUser: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateUser(
+        userId: Int,
+        updatedUser: User,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 // Asegurando que la contraseña no se incluya si no es necesario cambiarla
@@ -72,14 +80,23 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun addUserCenter(userId: Int, centerId: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun addUserCenter(
+        userId: Int,
+        centerId: Int,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val response = ApiClientJoin.retrofitService.addUserCenter(userId, centerId)
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
-                    onError("Error al añadir el centro al usuario: ${response.errorBody()?.string()}")
+                    onError(
+                        "Error al añadir el centro al usuario: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
                 }
             } catch (e: Exception) {
                 onError("Error de red: ${e.localizedMessage}")

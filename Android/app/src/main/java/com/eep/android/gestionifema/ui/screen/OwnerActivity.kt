@@ -1,11 +1,7 @@
-package com.eep.android.gestionifema.ui
+package com.eep.android.gestionifema.ui.screen
 
-import android.net.Uri
 import android.util.Log
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.eep.android.gestionifema.model.Center
 import com.eep.android.gestionifema.viewmodel.OwnerViewModel
@@ -37,7 +32,7 @@ fun OwnerScreen(navController: NavController, viewModel: OwnerViewModel = viewMo
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("center")}) {
+            FloatingActionButton(onClick = { navController.navigate("center") }) {
                 Icon(Icons.Filled.Add, contentDescription = "Agregar centro")
             }
         },
@@ -45,10 +40,10 @@ fun OwnerScreen(navController: NavController, viewModel: OwnerViewModel = viewMo
             TopAppBar(
                 title = { Text("Centros") },
                 actions = {
-                    Button(onClick = { navController.popBackStack() }) {
+                    Button(onClick = { navController.navigate("login") }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Salir")
                         Text("Salir")
-                        
+
                     }
                     IconButton(onClick = { viewModel.getCenters() }) {
                         Icon(Icons.Filled.Refresh, contentDescription = "Actualizar")
@@ -84,7 +79,10 @@ fun CenterCard(center: Center, viewModel: OwnerViewModel, navController: NavCont
 
             Text(text = center.name, style = MaterialTheme.typography.titleMedium)
             Text(text = "Dirección: ${center.address}", style = MaterialTheme.typography.bodySmall)
-            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 IconButton(onClick = { showDetailsDialog = true }) {
                     Icon(Icons.Filled.Info, contentDescription = "Ver detalles")
                 }
@@ -129,36 +127,64 @@ fun ShowDetailsDialog(center: Center, onDismiss: () -> Unit) {
         }
     )
 }
+
 @Composable
 fun ShowEditDialog(center: Center, viewModel: OwnerViewModel, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    // Asegúrate de que los valores iniciales nunca sean nulos usando el operador Elvis `?:` con valores predeterminados.
-    var nombre by remember { mutableStateOf(center.name ?: "") }
-    var direccion by remember { mutableStateOf(center.address ?: "") }
-    var paginaWeb by remember { mutableStateOf(center.web ?: "") }
-    var telefono by remember { mutableStateOf(center.phone ?: "") }
-    var descripcion by remember { mutableStateOf(center.descr ?: "") }
+
+    var nombre by remember { mutableStateOf(center.name ) }
+    var direccion by remember { mutableStateOf(center.address) }
+    var paginaWeb by remember { mutableStateOf(center.web) }
+    var telefono by remember { mutableStateOf(center.phone) }
+    var descripcion by remember { mutableStateOf(center.descr) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Editar Centro") },
         text = {
             Column {
-                TextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
-                TextField(value = direccion, onValueChange = { direccion = it }, label = { Text("Dirección") })
-                TextField(value = paginaWeb, onValueChange = { paginaWeb = it }, label = { Text("Página Web") })
-                TextField(value = telefono, onValueChange = { telefono = it }, label = { Text("Teléfono") })
-                TextField(value = descripcion, onValueChange = { descripcion = it }, label = { Text("Descripción") })
+                TextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre") })
+                TextField(
+                    value = direccion,
+                    onValueChange = { direccion = it },
+                    label = { Text("Dirección") })
+                TextField(
+                    value = paginaWeb,
+                    onValueChange = { paginaWeb = it },
+                    label = { Text("Página Web") })
+                TextField(
+                    value = telefono,
+                    onValueChange = { telefono = it },
+                    label = { Text("Teléfono") })
+                TextField(
+                    value = descripcion,
+                    onValueChange = { descripcion = it },
+                    label = { Text("Descripción") })
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                val updatedCenter = Center(center.id, nombre, paginaWeb, center.type, direccion, telefono, descripcion)
+                val updatedCenter = Center(
+                    center.id,
+                    nombre,
+                    paginaWeb,
+                    center.type,
+                    direccion,
+                    telefono,
+                    descripcion
+                )
                 viewModel.updateCenter(center.id, updatedCenter, onSuccess = {
                     Toast.makeText(context, "Centro actualizado", Toast.LENGTH_SHORT).show()
                     onDismiss()
                 }, onError = { errorMsg ->
-                    Toast.makeText(context, "Error al actualizar el centro: $errorMsg", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Error al actualizar el centro: $errorMsg",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     Log.e("OwnerScreen", "Error al actualizar el centro: $errorMsg")
                 })
             }) {
@@ -174,7 +200,12 @@ fun ShowEditDialog(center: Center, viewModel: OwnerViewModel, onDismiss: () -> U
 }
 
 @Composable
-fun ShowDeleteDialog(center: Center, viewModel: OwnerViewModel, navController: NavController, onDismiss: () -> Unit) {
+fun ShowDeleteDialog(
+    center: Center,
+    viewModel: OwnerViewModel,
+    navController: NavController,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current  // Obtiene el contexto actual de Compose
 
     AlertDialog(
@@ -184,10 +215,11 @@ fun ShowDeleteDialog(center: Center, viewModel: OwnerViewModel, navController: N
         confirmButton = {
             TextButton(onClick = {
                 viewModel.deleteCenter(center.id, onSuccess = {
-                    Toast.makeText(context, "Centro eliminado", Toast.LENGTH_SHORT).show()  // Usa el contexto obtenido
-//                    navController.popBackStack()
+                    Toast.makeText(context, "Centro eliminado", Toast.LENGTH_SHORT)
+                        .show()
                 }, onError = {
-                    Toast.makeText(context, "Error al eliminar el centro", Toast.LENGTH_SHORT).show()  // Usa el contexto obtenido
+                    Toast.makeText(context, "Error al eliminar el centro", Toast.LENGTH_SHORT)
+                        .show()
                 })
                 onDismiss()
             }) {
@@ -201,6 +233,7 @@ fun ShowDeleteDialog(center: Center, viewModel: OwnerViewModel, navController: N
         }
     )
 }
+
 @Preview
 @Composable
 fun PreviewOwnerScreen() {
@@ -212,7 +245,15 @@ fun PreviewOwnerScreen() {
 @Preview
 @Composable
 fun PreviewCenterCard() {
-    val center = Center(1, "Centro de Prueba", "https://example.com", "type", "Calle de Prueba", "123456789", "Descripción de prueba")
+    val center = Center(
+        1,
+        "Centro de Prueba",
+        "https://example.com",
+        "type",
+        "Calle de Prueba",
+        "123456789",
+        "Descripción de prueba"
+    )
     val viewModel = viewModel<OwnerViewModel>()
     val navController = rememberNavController()
     CenterCard(center, viewModel, navController)
@@ -221,7 +262,15 @@ fun PreviewCenterCard() {
 @Preview
 @Composable
 fun PreviewShowEditDialog() {
-    val center = Center(1, "Centro de Prueba", "https://example.com", "type", "Calle de Prueba", "123456789", "Descripción de prueba")
+    val center = Center(
+        1,
+        "Centro de Prueba",
+        "https://example.com",
+        "type",
+        "Calle de Prueba",
+        "123456789",
+        "Descripción de prueba"
+    )
     val viewModel = viewModel<OwnerViewModel>()
     ShowEditDialog(center, viewModel) {}
 }
@@ -229,7 +278,15 @@ fun PreviewShowEditDialog() {
 @Preview
 @Composable
 fun PreviewShowDeleteDialog() {
-    val center = Center(1, "Centro de Prueba", "https://example.com", "type", "Calle de Prueba", "123456789", "Descripción de prueba")
+    val center = Center(
+        1,
+        "Centro de Prueba",
+        "https://example.com",
+        "type",
+        "Calle de Prueba",
+        "123456789",
+        "Descripción de prueba"
+    )
     val viewModel = viewModel<OwnerViewModel>()
     val navController = rememberNavController()
     ShowDeleteDialog(center, viewModel, navController) {}
@@ -238,7 +295,15 @@ fun PreviewShowDeleteDialog() {
 @Preview
 @Composable
 fun PreviewShowDetailsDialog() {
-    val center = Center(1, "Centro de Prueba", "https://example.com", "type", "Calle de Prueba", "123456789", "Descripción de prueba")
+    val center = Center(
+        1,
+        "Centro de Prueba",
+        "https://example.com",
+        "type",
+        "Calle de Prueba",
+        "123456789",
+        "Descripción de prueba"
+    )
     ShowDetailsDialog(center) {}
 }
 

@@ -11,14 +11,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.eep.android.gestionifema.ui.AddCenterScreen
+import com.eep.android.gestionifema.ui.screen.AddCenterScreen
 
 
-import com.eep.android.gestionifema.ui.LoginScreen
-import com.eep.android.gestionifema.ui.OwnerScreen
-import com.eep.android.gestionifema.ui.Screen
-import com.eep.android.gestionifema.ui.UserScreen
-import com.eep.android.gestionifema.ui.WebViewScreen
+import com.eep.android.gestionifema.ui.screen.LoginScreen
+import com.eep.android.gestionifema.ui.screen.OwnerScreen
+import com.eep.android.gestionifema.ui.screen.Screen
+import com.eep.android.gestionifema.ui.screen.UserScreen
+import com.eep.android.gestionifema.ui.screen.WebViewScreen
 import com.eep.android.gestionifema.ui.theme.GestionIFEMATheme
 
 

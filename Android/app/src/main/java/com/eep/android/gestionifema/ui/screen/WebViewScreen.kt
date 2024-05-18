@@ -1,9 +1,6 @@
-package com.eep.android.gestionifema.ui
+package com.eep.android.gestionifema.ui.screen
 
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType

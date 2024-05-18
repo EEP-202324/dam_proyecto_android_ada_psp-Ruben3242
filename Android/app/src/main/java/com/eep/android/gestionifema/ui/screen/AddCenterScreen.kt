@@ -1,4 +1,4 @@
-package com.eep.android.gestionifema.ui
+package com.eep.android.gestionifema.ui.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -118,7 +118,7 @@ fun AddCenterScreen(navController: NavController, viewModel: OwnerViewModel) {
                                 "Centro agregado correctamente",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            navController.navigate("owner")
+                            navController.navigate(Screen.Owner)
                         }, {
                             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                         })

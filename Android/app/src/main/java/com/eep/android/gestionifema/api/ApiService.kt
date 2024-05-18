@@ -29,7 +29,11 @@ private const val BASE_URL =
 
 val gson = GsonBuilder()
     .registerTypeAdapter(User::class.java, object : JsonDeserializer<User> {
-        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): User? {
+        override fun deserialize(
+            json: JsonElement,
+            typeOfT: Type,
+            context: JsonDeserializationContext
+        ): User? {
             // Verificar si el elemento JSON no es un objeto
             if (!json.isJsonObject) {
                 throw JsonParseException("Expected JSON object")

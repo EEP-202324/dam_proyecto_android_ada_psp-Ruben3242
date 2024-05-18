@@ -15,11 +15,11 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Permitir acceso a Swagger
-				.anyRequest().authenticated()) // Resto de peticiones requieren autenticación
-				.httpBasic(Customizer.withDefaults()) // Configurar autenticación básica
-				.csrf(csrf -> csrf.disable()); // Desactivar CSRF
-		return http.build();
+	    http
+	        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // Permite todas las solicitudes
+	        .csrf(csrf -> csrf.disable()) // Desactiva CSRF
+	        .cors().disable(); // Desactiva CORS 
+	    return http.build();
 	}
 
 	@Bean

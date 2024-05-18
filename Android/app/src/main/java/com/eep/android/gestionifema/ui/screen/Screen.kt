@@ -1,4 +1,4 @@
-package com.eep.android.gestionifema.ui
+package com.eep.android.gestionifema.ui.screen
 
 object Screen {
     val Login = "login"
