@@ -104,11 +104,6 @@ public class UserService {
 		return userRepository.findAll(pageable);
 	}
 
-//	public User getUserByEmail(String email, String password) {
-//		return userRepository.findByEmailAndPassword(email, password);
-//	}
-
-	// faindByRol
 	public List<User> getUsersByRol(String rol) {
 		return userRepository.findByRol(rol);
 	}

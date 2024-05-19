@@ -29,5 +29,4 @@ public class UserCenterService {
 		return userRepository.save(user);
 	}
 
-	// Otros métodos...
 }

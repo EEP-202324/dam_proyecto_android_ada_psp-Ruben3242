@@ -118,7 +118,7 @@ fun LoginScreen(navController: NavHostController) {
 
                             if (user != null) {
                                 if (user.rol == "Owner") {
-                                    navController.navigate("ownerScreen")
+                                    navController.navigate("owner")
                                 } else if (user.rol == "User") {
                                     navController.navigate("userScreen/${user.id}")
                                 }

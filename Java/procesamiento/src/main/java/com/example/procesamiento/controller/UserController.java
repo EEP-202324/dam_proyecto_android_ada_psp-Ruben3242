@@ -22,7 +22,6 @@ import com.example.procesamiento.repository.UserRepository;
 import com.example.procesamiento.service.UserService;
 
 @RestController
-
 public class UserController {
 
 	private final UserService userService;

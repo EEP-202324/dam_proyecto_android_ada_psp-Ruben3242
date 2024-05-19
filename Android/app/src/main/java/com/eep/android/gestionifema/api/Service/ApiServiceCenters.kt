@@ -17,10 +17,7 @@ interface ApiServiceCenters {
     suspend fun getCenterById(@Path("id") id: Int): Response<Center>
 
     @PUT("centers/{id}")
-    suspend fun updateCenterById(
-        @Path("id") centerId: Int,
-        @Body updatedCenter: Center
-    ): Response<Center>
+    suspend fun updateCenterById(@Path("id") centerId: Int,@Body updatedCenter: Center): Response<Center>
 
     @POST("centers")
     suspend fun createCenter(@Body center: Center): Response<Center>
