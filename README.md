@@ -42,7 +42,7 @@ Este proyecto cumple con todos los criterios establecidos en las rúbricas de AD
 
 ## Video Demostrativo
 Incluye aquí el enlace al video de Stream que muestra la demostración del funcionamiento de la aplicación y la explicación del código:
-- [Ver Video Demostrativo](https://eepmad-my.sharepoint.com/:v:/g/personal/ruben-lopez1_eep-igroup_com/EXSYh-ZrW21AgAprld3wiyEBaIZm6ZGI5ATYYE5Q96dNsA?e=dWWyeB)
+- [Ver Video Demostrativo](https://eepmad-my.sharepoint.com/:v:/g/personal/ruben-lopez1_eep-igroup_com/EWIxBCM2IeFEpmfPIgxesroBRtjkdo-L3TyAXuxJsNeYmA?e=jOhNuu&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
 ## Instrucciones Adicionales
 Si se desea usar y probar todas las funcionalidades se debera tener en cuenta:
